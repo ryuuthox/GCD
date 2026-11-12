@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Matrice Problèmes / Solutions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #1e3a8a;
+            border-bottom: 3px solid #1e3a8a;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+        th {
+            background-color: #1e3a8a;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.05em;
+        }
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        tr:hover {
+            background-color: #f3f4f6;
+        }
+        .domain {
+            font-weight: bold;
+            color: #374151;
+            width: 15%;
+        }
+        .problem {
+            color: #b91c1c; /* Rouge pour les problèmes */
+            width: 42%;
+        }
+        .problem ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .solution {
+            color: #047857; /* Vert pour les solutions */
+            width: 43%;
+        }
+        .solution ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .problem li, .solution li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            th {
+                background-color: #1e3a8a !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact; 
+            }
+            tr:nth-child(even) {
+                background-color: #f9fafb !important;
+                -webkit-print-color-adjust: exact; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Optimisation du Processus d'Inscription</h1>
+    <div class="subtitle">Matrice des Problèmes et Solutions proposées (Application AI Studio)</div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th class="domain">Domaine</th>
+                <th class="problem">Problèmes identifiés</th>
+                <th class="solution">Solutions proposées</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="domain">Parcours & Ergonomie</td>
+                <td class="problem">
+                    <ul>
+                        <li>Interface confuse ("usine à gaz") avec des listes de boutons sans ordre logique.</li>
+                        <li>Surcharge cognitive (trop de texte, pas assez de repères visuels).</li>
+                        <li>Manque de feedback (l'utilisateur ne sait pas si son action a réussi).</li>
+                        <li>Non adapté aux smartphones.</li>
+                    </ul>
+                </td>
+                <td class="solution">
+                    <ul>
+                        <li><strong>"Stepper"</strong> (Assistant par étapes) avec barre de progression.</li>
+                        <li><strong>Design System moderne</strong> (vert = validé, orange = en attente).</li>
+                        <li><strong>Micro-interactions</strong> (animations de succès lors des dépôts).</li>
+                        <li><strong>Mobile-First</strong> (interface pensée pour le téléphone).</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td class="domain">Gestion Documentaire</td>
+                <td class="problem">
+                    <ul>
+                        <li>L'étudiant ne sait pas quels documents fournir ni dans quel ordre.</li>
+                        <li>Risque d'erreurs de saisie sur les formulaires pré-remplis.</li>
+                        <li>Obligation d'imprimer en 2 exemplaires et de scanner.</li>
+                    </ul>
+                </td>
+                <td class="solution">
+                    <ul>
+                        <li><strong>Checklist interactive</strong> et génération automatique des PDF.</li>
+                        <li><strong>Formulaires intelligents</strong> avec validation des données en temps réel.</li>
+                        <li><strong>Zone de "Drag & Drop"</strong> pour téléverser les fichiers facilement.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td class="domain">Signatures & Workflow</td>
+                <td class="problem">
+                    <ul>
+                        <li>Allers-retours physiques pour récupérer les signatures.</li>
+                        <li>Signature scannée peu fiable et difficile à tracer.</li>
+                        <li>Statuts "en attente" bloquants et peu clairs.</li>
+                    </ul>
+                </td>
+                <td class="solution">
+                    <ul>
+                        <li><strong>Signature électronique sécurisée</strong> (ou validation par code OTP/SMS).</li>
+                        <li><strong>Workflow dématérialisé</strong> (notification automatique pour approbation en 1 clic).</li>
+                        <li><strong>Tableau de bord visuel</strong> affichant clairement qui doit signer quoi.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td class="domain">Sélection des Candidats</td>
+                <td class="problem">
+                    <ul>
+                        <li>Lecture des dossiers (CV, notes) longue et fastidieuse.</li>
+                        <li>Tableaux encombrés nécessitant de changer de page pour comparer les profils.</li>
+                    </ul>
+                </td>
+                <td class="solution">
+                    <ul>
+                        <li><strong>IA Candidate Matcher</strong> (extraction et résumé automatique des CV et mentions).</li>
+                        <li><strong>Vue "Panneau latéral" (Drawer)</strong> pour consulter un dossier sans quitter la page.</li>
+                        <li><strong>Système de scoring</strong> pour aider à la présélection.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td class="domain">Conformité & Sécurité</td>
+                <td class="problem">
+                    <ul>
+                        <li>Risque de faux diplômes ou d'équivalences non valides.</li>
+                        <li>Manque de traçabilité juridique et de protection des données (Loi 09-08, CNSPN).</li>
+                    </ul>
+                </td>
+                <td class="solution">
+                    <ul>
+                        <li><strong>Module OCR (Vision par ordinateur)</strong> pour vérifier la concordance des noms (CIN, Bac, Master).</li>
+                        <li><strong>Chiffrement des données</strong> sensibles.</li>
+                        <li><strong>Cases de consentement obligatoire</strong> (Charte, protection des données).</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td class="domain">Administration & Suivi</td>
+                <td class="problem">
+                    <ul>
+                        <li>Réception de dossiers incomplets.</li>
+                        <li>Vérification manuelle des critères (crédits, publications).</li>
+                        <li>Manque de visibilité globale sur les inscriptions en cours.</li>
+                    </ul>
+                </td>
+                <td class="solution">
+                    <ul>
+                        <li><strong>Moteur de règles automatisé</strong> (blocage si les critères légaux ne sont pas remplis).</li>
+                        <li><strong>Dashboard avec KPI</strong> (statistiques visuelles des dossiers reçus/validés).</li>
+                        <li><strong>Alertes automatiques</strong> de fin de délai (deadline).</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

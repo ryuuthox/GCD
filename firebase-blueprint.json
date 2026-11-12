@@ -1,0 +1,295 @@
+{
+  "entities": {
+    "user": {
+      "title": "User Profile",
+      "description": "User account in the GCD platform with multi-role RBAC assignments",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "fullName": { "type": "string", "maxLength": 150 },
+        "arabicName": { "type": "string", "maxLength": 150 },
+        "roles": { "type": "array" },
+        "cin": { "type": "string", "maxLength": 20 },
+        "cne": { "type": "string", "maxLength": 20 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "title": { "type": "string", "maxLength": 150 },
+        "university": { "type": "string", "maxLength": 180 },
+        "lab": { "type": "string", "maxLength": 180 },
+        "school": { "type": "string", "maxLength": 180 },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "fullName", "roles", "active"]
+    },
+    "userAccount": {
+      "title": "Staff Account Directory",
+      "description": "Pre-authorized teacher, thesis director, co-supervisor, and structure director accounts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "fullName": { "type": "string" },
+        "roles": { "type": "array" },
+        "role": { "type": "string" },
+        "title": { "type": "string" },
+        "university": { "type": "string" },
+        "school": { "type": "string" },
+        "lab": { "type": "string" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "email", "fullName", "roles", "active"]
+    },
+    "subject": {
+      "title": "Doctoral Subject",
+      "description": "Thesis research proposal",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "maxLength": 400 },
+        "supervisorName": { "type": "string" },
+        "supervisorEmail": { "type": "string" },
+        "coSupervisorName": { "type": "string" },
+        "labName": { "type": "string" },
+        "schoolName": { "type": "string" },
+        "university": { "type": "string" },
+        "academicYear": { "type": "string" },
+        "domain": { "type": "string" },
+        "status": { "type": "string", "enum": ["valide", "en_attente_structure", "rejete"] },
+        "description": { "type": "string" },
+        "prerequisites": { "type": "string" }
+      },
+      "required": ["id", "title", "supervisorName", "status"]
+    },
+    "candidate": {
+      "title": "Candidate Application",
+      "description": "Doctoral candidature dossier with lifecycle state and multi-actor assignments",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "fullName": { "type": "string", "maxLength": 150 },
+        "arabicName": { "type": "string", "maxLength": 150 },
+        "email": { "type": "string" },
+        "cin": { "type": "string", "maxLength": 20 },
+        "cne": { "type": "string", "maxLength": 20 },
+        "phone": { "type": "string" },
+        "diploma": { "type": "string" },
+        "specialty": { "type": "string" },
+        "masterGrade": { "type": "number" },
+        "licenceGrade": { "type": "number" },
+        "subjectId": { "type": "string" },
+        "subjectTitle": { "type": "string" },
+        "supervisorName": { "type": "string" },
+        "thesisDirectorName": { "type": "string" },
+        "coSupervisorName": { "type": "string" },
+        "structureDirectorName": { "type": "string" },
+        "lifecycleState": { "type": "string" },
+        "status": { "type": "string" },
+        "submissionDate": { "type": "string" }
+      },
+      "required": ["id", "fullName", "cin", "email", "lifecycleState"]
+    },
+    "applicationDocument": {
+      "title": "Application Document",
+      "description": "Uploaded justification file metadata and validation state",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "applicationId": { "type": "string" },
+        "docType": { "type": "string" },
+        "label": { "type": "string" },
+        "fileName": { "type": "string" },
+        "mimeType": { "type": "string" },
+        "fileSizeBytes": { "type": "number" },
+        "uploadedByUid": { "type": "string" },
+        "uploadedAt": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "validated", "rejected", "additional_info_required"] },
+        "rejectionReason": { "type": "string" }
+      },
+      "required": ["id", "applicationId", "docType", "fileName", "mimeType", "fileSizeBytes", "status"]
+    },
+    "interviewPv": {
+      "title": "Interview PV",
+      "description": "Oral examination report",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "candidateId": { "type": "string" },
+        "candidateName": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "supervisorName": { "type": "string" },
+        "oralGrade": { "type": "number" },
+        "decision": { "type": "string" },
+        "validatedByStructure": { "type": "boolean" }
+      },
+      "required": ["id", "candidateId", "oralGrade", "decision"]
+    },
+    "auditLog": {
+      "title": "Audit Log Entry",
+      "description": "Immutable traceability record for critical business operations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "actorUid": { "type": "string" },
+        "actorName": { "type": "string" },
+        "actorEmail": { "type": "string" },
+        "actorRoles": { "type": "array" },
+        "action": { "type": "string" },
+        "actionLabel": { "type": "string" },
+        "targetType": { "type": "string" },
+        "targetId": { "type": "string" },
+        "targetLabel": { "type": "string" },
+        "details": { "type": "string" }
+      },
+      "required": ["id", "timestamp", "actorUid", "actorName", "action", "targetId"]
+    },
+    "notification": {
+      "title": "Notification",
+      "description": "Informational or action-required user notification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "recipientUid": { "type": "string" },
+        "recipientEmail": { "type": "string" },
+        "recipientRole": { "type": "string" },
+        "triggerEvent": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string", "enum": ["informational", "action_required"] },
+        "status": { "type": "string", "enum": ["unread", "read", "resolved"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "triggerEvent", "title", "content", "category", "status", "createdAt"]
+    },
+    "calendarEvent": {
+      "title": "Doctoral Calendar Event",
+      "description": "Campaign deadline or admission milestone",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "stageCode": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "responsibleRoles": { "type": "array" },
+        "isCriticalDeadline": { "type": "boolean" }
+      },
+      "required": ["id", "title", "stageCode", "startDate", "endDate"]
+    },
+    "reregistration": {
+      "title": "ReRegistration Application",
+      "description": "Annual doctoral re-registration and report",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "studentCin": { "type": "string" },
+        "year": { "type": "number" },
+        "thesisTitle": { "type": "string" },
+        "supervisorName": { "type": "string" },
+        "structureApproval": { "type": "string" }
+      },
+      "required": ["id", "studentName", "year", "thesisTitle"]
+    },
+    "adminMarker": {
+      "title": "Admin Marker",
+      "description": "Trusted marker document confirming administrator privilege",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "grantedAt": { "type": "string" }
+      },
+      "required": ["uid", "grantedAt"]
+    },
+    "relance": {
+      "title": "Manual Relance",
+      "description": "Follow-up reminder issued by supervisors",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "senderUid": { "type": "string" },
+        "senderName": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "recipientEmail": { "type": "string" },
+        "recipientRole": { "type": "string", "enum": ["candidat", "directeur_structure"] },
+        "subjectTitle": { "type": "string" },
+        "reason": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "senderName", "recipientEmail", "message", "status"]
+    },
+    "roleGrant": {
+      "title": "Trusted Role Grant",
+      "description": "Admin-issued email-keyed RBAC role and active status grant verified by Firestore security rules",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email", "maxLength": 180 },
+        "roles": { "type": "array" },
+        "active": { "type": "boolean" },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["email", "roles", "active"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "user" },
+      "description": "User profiles and RBAC role assignments"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "adminMarker" },
+      "description": "Verified administrator UID markers"
+    },
+    "/roleGrants/{emailKey}": {
+      "schema": { "$ref": "roleGrant" },
+      "description": "Trusted admin-authored RBAC grants keyed by normalized lowercase email"
+    },
+    "/userAccounts/{accountId}": {
+      "schema": { "$ref": "userAccount" },
+      "description": "Admin-managed staff accounts and role templates"
+    },
+    "/subjects/{subjectId}": {
+      "schema": { "$ref": "subject" },
+      "description": "Doctoral research subjects"
+    },
+    "/candidates/{candidateId}": {
+      "schema": { "$ref": "candidate" },
+      "description": "Doctoral candidature applications"
+    },
+    "/applicationDocuments/{docId}": {
+      "schema": { "$ref": "applicationDocument" },
+      "description": "Uploaded document metadata and compliance status"
+    },
+    "/interviewPvs/{pvId}": {
+      "schema": { "$ref": "interviewPv" },
+      "description": "Oral interview PVs"
+    },
+    "/relances/{relanceId}": {
+      "schema": { "$ref": "relance" },
+      "description": "Supervisor follow-up reminders"
+    },
+    "/auditLogs/{logId}": {
+      "schema": { "$ref": "auditLog" },
+      "description": "Append-only audit trail"
+    },
+    "/notifications/{notifId}": {
+      "schema": { "$ref": "notification" },
+      "description": "User notifications"
+    },
+    "/calendarEvents/{eventId}": {
+      "schema": { "$ref": "calendarEvent" },
+      "description": "Doctoral campaign deadlines and stages"
+    },
+    "/reregistrations/{reregistrationId}": {
+      "schema": { "$ref": "reregistration" },
+      "description": "Annual doctoral re-registration dossiers"
+    }
+  }
+}

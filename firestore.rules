@@ -1,0 +1,607 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // =========================================================================
+    // GLOBAL HARDENED PRIMITIVES
+    // =========================================================================
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidEmailKey(emailKey) {
+      return emailKey is string && emailKey.size() >= 3 && emailKey.size() <= 180 &&
+        emailKey.matches('^[a-zA-Z0-9._%+\\-@]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isVerified() && request.auth.uid == userId;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerified() && request.auth.token.email == 'ryuuthox@gmail.com';
+    }
+
+    function hasUserDoc() {
+      return isVerified() && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function currentUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (
+        isVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isStructureDirectorUser() {
+      return isAdmin() || (
+        hasUserDoc() &&
+        currentUserDoc().active == true &&
+        'directeur_structure' in currentUserDoc().roles
+      );
+    }
+
+    function isStaffUser() {
+      return isAdmin() || (
+        hasUserDoc() &&
+        currentUserDoc().active == true &&
+        currentUserDoc().roles.hasAny([
+          'enseignant',
+          'directeur_these',
+          'co_encadrant',
+          'directeur_structure',
+          'admin'
+        ])
+      );
+    }
+
+    // =========================================================================
+    // SCHEMA & BOUNDARY VALIDATION HELPERS (ANTI-UPDATE-GAP & SIZE GUARDS)
+    // =========================================================================
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'fullName', 'roles', 'active']) &&
+        data.keys().hasOnly([
+          'uid', 'email', 'fullName', 'arabicName', 'roles', 'cin', 'cne',
+          'phone', 'title', 'university', 'school', 'lab', 'active',
+          'photoURL', 'createdAt', 'updatedAt'
+        ]) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 180 &&
+        data.fullName is string && data.fullName.size() >= 1 && data.fullName.size() <= 150 &&
+        data.roles is list && data.roles.size() >= 1 && data.roles.size() <= 6 &&
+        data.roles.hasOnly([
+          'candidat', 'enseignant', 'directeur_these',
+          'co_encadrant', 'directeur_structure', 'admin'
+        ]) &&
+        data.active is bool &&
+        (!('arabicName' in data) || (data.arabicName is string && data.arabicName.size() <= 150)) &&
+        (!('cin' in data) || (data.cin is string && data.cin.size() <= 20)) &&
+        (!('cne' in data) || (data.cne is string && data.cne.size() <= 20)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 30)) &&
+        (!('title' in data) || (data.title is string && data.title.size() <= 150)) &&
+        (!('university' in data) || (data.university is string && data.university.size() <= 180)) &&
+        (!('school' in data) || (data.school is string && data.school.size() <= 180)) &&
+        (!('lab' in data) || (data.lab is string && data.lab.size() <= 180)) &&
+        (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 500)) &&
+        (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 64)) &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    function isValidUserAccount(data) {
+      return data.keys().hasAll(['id', 'email', 'fullName', 'roles', 'active']) &&
+        data.keys().hasOnly([
+          'id', 'uid', 'email', 'fullName', 'roles', 'role', 'title',
+          'university', 'school', 'lab', 'active', 'createdAt'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 180 &&
+        data.fullName is string && data.fullName.size() >= 1 && data.fullName.size() <= 150 &&
+        data.roles is list && data.roles.size() >= 1 && data.roles.size() <= 6 &&
+        data.roles.hasOnly([
+          'candidat', 'enseignant', 'directeur_these',
+          'co_encadrant', 'directeur_structure', 'admin'
+        ]) &&
+        data.active is bool &&
+        (!('uid' in data) || (data.uid is string && data.uid.size() <= 128)) &&
+        (!('role' in data) || (data.role is string && data.role.size() <= 40)) &&
+        (!('title' in data) || (data.title is string && data.title.size() <= 150)) &&
+        (!('university' in data) || (data.university is string && data.university.size() <= 180)) &&
+        (!('school' in data) || (data.school is string && data.school.size() <= 180)) &&
+        (!('lab' in data) || (data.lab is string && data.lab.size() <= 180)) &&
+        (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 64));
+    }
+
+    function isValidRoleGrant(data) {
+      return data.keys().hasAll(['email', 'roles', 'active']) &&
+        data.keys().hasOnly(['email', 'roles', 'active', 'updatedAt']) &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 180 &&
+        data.roles is list && data.roles.size() >= 1 && data.roles.size() <= 6 &&
+        data.roles.hasOnly([
+          'candidat', 'enseignant', 'directeur_these',
+          'co_encadrant', 'directeur_structure', 'admin'
+        ]) &&
+        data.active is bool &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    function isValidSubject(data) {
+      return data.keys().hasAll(['id', 'title', 'supervisorName', 'status']) &&
+        data.keys().hasOnly([
+          'id', 'title', 'supervisorName', 'supervisorUid', 'supervisorTitle',
+          'supervisorEmail', 'coSupervisorName', 'coSupervisorUid', 'labName',
+          'schoolName', 'university', 'academicYear', 'domain', 'eligibleMajors',
+          'totalApplicants', 'remainingSlots', 'status', 'structureApprovalDate',
+          'description', 'prerequisites', 'keywords', 'contactEmail'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.title is string && data.title.size() >= 3 && data.title.size() <= 400 &&
+        data.supervisorName is string && data.supervisorName.size() >= 1 && data.supervisorName.size() <= 150 &&
+        data.status in ['valide', 'en_attente_structure', 'rejete'] &&
+        (!('supervisorUid' in data) || (data.supervisorUid is string && data.supervisorUid.size() <= 128)) &&
+        (!('supervisorEmail' in data) || (data.supervisorEmail is string && data.supervisorEmail.size() <= 180)) &&
+        (!('description' in data) || (data.description is string && data.description.size() <= 3000)) &&
+        (!('prerequisites' in data) || (data.prerequisites is string && data.prerequisites.size() <= 1000)) &&
+        (!('eligibleMajors' in data) || (data.eligibleMajors is list && data.eligibleMajors.size() <= 10)) &&
+        (!('keywords' in data) || (data.keywords is list && data.keywords.size() <= 10));
+    }
+
+    function isValidCandidate(data) {
+      return data.keys().hasAll(['id', 'fullName', 'cin', 'email', 'lifecycleState']) &&
+        data.keys().hasOnly([
+          'id', 'userId', 'fullName', 'arabicName', 'cin', 'cne', 'birthDate',
+          'birthPlace', 'email', 'phone', 'isEmployed', 'originUniversity',
+          'diploma', 'specialty', 'masterGrade', 'licenceGrade', 'priorWorks',
+          'skills', 'subjectId', 'subjectTitle', 'supervisorName',
+          'teacherSupervisorUid', 'thesisDirectorName', 'thesisDirectorUid',
+          'coSupervisorName', 'coSupervisorUid', 'structureDirectorName',
+          'structureDirectorUid', 'labName', 'schoolName', 'university',
+          'selectedSubjects', 'academicYear', 'lifecycleState', 'status',
+          'interviewDate', 'interviewLocation', 'oralNote', 'submissionDate',
+          'lastModifiedAt', 'transitionHistory', 'documents',
+          'physicalSignedScanUploaded', 'physicalSignedScanUrl',
+          'otpSigned', 'otpSignatureHash', 'otpSignedAt'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.fullName is string && data.fullName.size() >= 1 && data.fullName.size() <= 150 &&
+        data.cin is string && data.cin.size() >= 1 && data.cin.size() <= 20 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 180 &&
+        data.lifecycleState in [
+          'brouillon', 'soumise', 'verification_docs', 'pieces_a_completer',
+          'examen_encadrement', 'entretien_planifie', 'evaluee',
+          'validation_structure', 'liste_principale', 'liste_attente',
+          'inscription_validee', 'rejetee'
+        ] &&
+        (!('userId' in data) || (data.userId is string && data.userId.size() <= 128)) &&
+        (!('arabicName' in data) || (data.arabicName is string && data.arabicName.size() <= 150)) &&
+        (!('selectedSubjects' in data) || (data.selectedSubjects is list && data.selectedSubjects.size() <= 3)) &&
+        (!('skills' in data) || (data.skills is list && data.skills.size() <= 20)) &&
+        (!('transitionHistory' in data) || (data.transitionHistory is list && data.transitionHistory.size() <= 50));
+    }
+
+    function isValidApplicationDocument(data) {
+      return data.keys().hasAll([
+          'id', 'applicationId', 'docType', 'fileName', 'mimeType', 'fileSizeBytes', 'status', 'uploadedByUid'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'applicationId', 'docType', 'label', 'fileName', 'mimeType',
+          'fileSizeBytes', 'uploadedByUid', 'uploadedAt', 'status',
+          'reviewerUid', 'reviewerName', 'reviewedAt', 'rejectionReason', 'previewDataUrl'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.applicationId is string && data.applicationId.size() >= 1 && data.applicationId.size() <= 128 &&
+        data.docType is string && data.docType.size() <= 40 &&
+        data.fileName is string && data.fileName.size() >= 1 && data.fileName.size() <= 255 &&
+        data.mimeType in ['application/pdf', 'image/jpeg', 'image/png'] &&
+        data.fileSizeBytes is number && data.fileSizeBytes > 0 && data.fileSizeBytes <= 5242880 &&
+        data.uploadedByUid is string && data.uploadedByUid.size() <= 128 &&
+        data.status in ['pending', 'validated', 'rejected', 'additional_info_required'] &&
+        (!('rejectionReason' in data) || (data.rejectionReason is string && data.rejectionReason.size() <= 1000)) &&
+        (!('previewDataUrl' in data) || (data.previewDataUrl is string && data.previewDataUrl.size() <= 700000));
+    }
+
+    function isValidInterviewPv(data) {
+      return data.keys().hasAll(['id', 'candidateId', 'oralGrade', 'decision']) &&
+        data.keys().hasOnly([
+          'id', 'candidateId', 'candidateName', 'candidateCin', 'subjectId',
+          'subjectTitle', 'supervisorName', 'supervisorUid', 'labName',
+          'schoolName', 'interviewDate', 'oralGrade', 'decision',
+          'juryMembers', 'comments', 'submittedBySupervisor',
+          'validatedByStructure', 'validatedByUid', 'validationDate', 'structureComments'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.candidateId is string && data.candidateId.size() >= 1 && data.candidateId.size() <= 128 &&
+        data.oralGrade is number && data.oralGrade >= 0 && data.oralGrade <= 20 &&
+        data.decision in ['admis_principal', 'liste_attente', 'non_admis'] &&
+        (!('juryMembers' in data) || (data.juryMembers is list && data.juryMembers.size() <= 10)) &&
+        (!('comments' in data) || (data.comments is string && data.comments.size() <= 2000)) &&
+        (!('structureComments' in data) || (data.structureComments is string && data.structureComments.size() <= 1000));
+    }
+
+    function isValidRelance(data) {
+      return data.keys().hasAll(['id', 'senderName', 'recipientEmail', 'message', 'status']) &&
+        data.keys().hasOnly([
+          'id', 'date', 'senderUid', 'senderName', 'recipientName',
+          'recipientEmail', 'recipientRole', 'subjectTitle', 'reason', 'message', 'status'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.senderName is string && data.senderName.size() <= 150 &&
+        data.recipientEmail is string && data.recipientEmail.size() <= 180 &&
+        data.message is string && data.message.size() >= 1 && data.message.size() <= 2000 &&
+        data.status == 'envoye';
+    }
+
+    function isValidAuditLog(data) {
+      return data.keys().hasAll(['id', 'timestamp', 'actorUid', 'actorName', 'action', 'targetId']) &&
+        data.keys().hasOnly([
+          'id', 'timestamp', 'actorUid', 'actorName', 'actorEmail', 'actorRoles',
+          'action', 'actionLabel', 'targetType', 'targetId', 'targetLabel',
+          'details', 'previousState', 'newState'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.timestamp is string && data.timestamp.size() <= 64 &&
+        data.actorUid is string && data.actorUid.size() <= 128 &&
+        data.actorName is string && data.actorName.size() <= 150 &&
+        data.action is string && data.action.size() <= 64 &&
+        data.targetId is string && data.targetId.size() <= 128 &&
+        (!('actorRoles' in data) || (data.actorRoles is list && data.actorRoles.size() <= 6)) &&
+        (!('details' in data) || (data.details is string && data.details.size() <= 2000));
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['id', 'triggerEvent', 'title', 'content', 'category', 'status', 'createdAt']) &&
+        data.keys().hasOnly([
+          'id', 'recipientUid', 'recipientEmail', 'recipientRole',
+          'triggerEvent', 'title', 'content', 'category', 'status', 'createdAt',
+          'relatedTargetType', 'relatedTargetId', 'targetSection', 'actionLabel'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.triggerEvent is string && data.triggerEvent.size() <= 80 &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+        data.content is string && data.content.size() >= 1 && data.content.size() <= 1500 &&
+        data.category in ['informational', 'action_required'] &&
+        data.status in ['unread', 'read', 'resolved'] &&
+        data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidCalendarEvent(data) {
+      return data.keys().hasAll(['id', 'title', 'stageCode', 'startDate', 'endDate']) &&
+        data.keys().hasOnly([
+          'id', 'title', 'description', 'stageCode', 'startDate', 'endDate',
+          'responsibleRoles', 'isCriticalDeadline', 'university'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+        data.stageCode in [
+          'campagne_sujets', 'depot_candidatures', 'verification_docs',
+          'entretiens_oraux', 'visa_structure', 'inscription_finale', 'reinscription'
+        ] &&
+        data.startDate is string && data.startDate.size() == 10 &&
+        data.endDate is string && data.endDate.size() == 10 &&
+        (!('responsibleRoles' in data) || (data.responsibleRoles is list && data.responsibleRoles.size() <= 6));
+    }
+
+    function isValidReRegistration(data) {
+      return data.keys().hasAll(['id', 'studentName', 'year', 'thesisTitle']) &&
+        data.keys().hasOnly([
+          'id', 'userId', 'studentName', 'studentArabicName', 'studentCin',
+          'studentCne', 'year', 'thesisTitle', 'supervisorName', 'labName',
+          'schoolName', 'university', 'firstRegistrationYear', 'activityReport',
+          'validatedCredits', 'publicationsCount', 'communicationsCount',
+          'structureApproval', 'structureComments', 'committeeAvis',
+          'committeeComments', 'physicalSignedScanUploaded'
+        ]) &&
+        data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+        data.studentName is string && data.studentName.size() >= 1 && data.studentName.size() <= 150 &&
+        data.year is number && data.year >= 1 && data.year <= 8 &&
+        data.thesisTitle is string && data.thesisTitle.size() >= 1 && data.thesisTitle.size() <= 400;
+    }
+
+    // =========================================================================
+    // COLLECTION MATCH BLOCKS
+    // =========================================================================
+
+    // User Profiles & Multi-Role RBAC
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isVerified() && isValidId(userId) && isValidUser(incoming()) &&
+        incoming().uid == request.auth.uid && (
+          isAdmin() ||
+          (isOwner(userId) && (
+            incoming().roles.hasOnly(['candidat']) ||
+            (
+              exists(/databases/$(database)/documents/roleGrants/$(request.auth.token.email)) &&
+              incoming().roles == get(/databases/$(database)/documents/roleGrants/$(request.auth.token.email)).data.roles &&
+              incoming().active == get(/databases/$(database)/documents/roleGrants/$(request.auth.token.email)).data.active
+            )
+          ))
+        );
+      allow update: if isVerified() && isValidId(userId) && isValidUser(incoming()) &&
+        incoming().uid == existing().uid && (
+          isAdmin() ||
+          (
+            isOwner(userId) &&
+            incoming().roles == existing().roles &&
+            incoming().active == existing().active &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'fullName', 'arabicName', 'cin', 'cne', 'phone',
+              'university', 'photoURL', 'updatedAt'
+            ])
+          ) ||
+          (
+            isOwner(userId) &&
+            exists(/databases/$(database)/documents/roleGrants/$(request.auth.token.email)) &&
+            incoming().roles == get(/databases/$(database)/documents/roleGrants/$(request.auth.token.email)).data.roles &&
+            incoming().active == get(/databases/$(database)/documents/roleGrants/$(request.auth.token.email)).data.active &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'roles', 'active', 'fullName', 'arabicName', 'cin', 'cne', 'phone',
+              'university', 'photoURL', 'updatedAt'
+            ])
+          )
+        );
+      allow delete: if isAdmin() && isValidId(userId);
+    }
+
+    // Trusted Admin-Issued Role Grants (keyed by lowercase email)
+    match /roleGrants/{emailKey} {
+      allow get: if isValidEmailKey(emailKey) && isVerified() && (
+        isAdmin() || emailKey == request.auth.token.email
+      );
+      allow list: if isAdmin();
+      allow create, update: if isAdmin() && isValidEmailKey(emailKey) &&
+        isValidRoleGrant(incoming()) && incoming().email == emailKey;
+      allow delete: if isAdmin() && isValidEmailKey(emailKey);
+    }
+
+    // Verified Admin Markers
+    match /admins/{adminId} {
+      allow get: if isValidId(adminId) && (isOwner(adminId) || isAdmin());
+      allow list: if isAdmin();
+      allow create, update: if isVerified() && isValidId(adminId) &&
+        (isBootstrappedAdmin() || isAdmin()) &&
+        incoming().keys().hasAll(['uid', 'grantedAt']) &&
+        incoming().keys().hasOnly(['uid', 'grantedAt']) &&
+        incoming().uid is string && incoming().uid.size() <= 128 &&
+        incoming().grantedAt is string && incoming().grantedAt.size() <= 64;
+      allow delete: if isBootstrappedAdmin() && isValidId(adminId);
+    }
+
+    // Pre-authorized Staff Accounts Directory
+    match /userAccounts/{accountId} {
+      allow get: if isValidId(accountId) && (
+        isAdmin() ||
+        (isVerified() && existing().email == request.auth.token.email)
+      );
+      allow list: if isAdmin() || (
+        isVerified() && resource.data.email == request.auth.token.email
+      );
+      allow create, update: if isAdmin() && isValidId(accountId) && isValidUserAccount(incoming());
+      allow delete: if isAdmin() && isValidId(accountId);
+    }
+
+    // Doctoral Subjects (Public Catalog Read, Staff/Structure Controlled Write)
+    match /subjects/{subjectId} {
+      allow get: if isValidId(subjectId);
+      allow list: if true;
+      allow create: if isVerified() && isValidId(subjectId) && isValidSubject(incoming()) && (
+        isAdmin() ||
+        isStructureDirectorUser() ||
+        (isStaffUser() && incoming().status == 'en_attente_structure')
+      );
+      allow update: if isVerified() && isValidId(subjectId) && isValidSubject(incoming()) && (
+        isAdmin() ||
+        (isStructureDirectorUser() &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'structureApprovalDate'])) ||
+        (existing().supervisorUid == request.auth.uid &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'title', 'description', 'prerequisites', 'domain', 'keywords', 'remainingSlots'
+          ]))
+      );
+      allow delete: if isAdmin() && isValidId(subjectId);
+    }
+
+    // Doctoral Candidatures (PII-Protected)
+    match /candidates/{candidateId} {
+      allow get: if isValidId(candidateId) && isVerified() && (
+        existing().userId == request.auth.uid ||
+        existing().email == request.auth.token.email ||
+        isStaffUser() ||
+        isAdmin()
+      );
+      allow list: if isVerified() && (
+        isAdmin() ||
+        isStaffUser() ||
+        resource.data.userId == request.auth.uid ||
+        resource.data.email == request.auth.token.email
+      );
+      allow create: if isVerified() && isValidId(candidateId) && isValidCandidate(incoming()) && (
+        isAdmin() || incoming().userId == request.auth.uid
+      );
+      allow update: if isVerified() && isValidId(candidateId) && isValidCandidate(incoming()) && (
+        isAdmin() ||
+        (
+          existing().userId == request.auth.uid &&
+          incoming().userId == existing().userId &&
+          existing().lifecycleState != 'inscription_validee' &&
+          (incoming().email == existing().email || incoming().email == request.auth.token.email) &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'fullName', 'arabicName', 'cin', 'cne', 'birthDate', 'birthPlace',
+            'email', 'phone', 'isEmployed', 'originUniversity', 'diploma', 'specialty',
+            'masterGrade', 'licenceGrade', 'priorWorks', 'skills', 'subjectId',
+            'subjectTitle', 'supervisorName', 'thesisDirectorName', 'coSupervisorName',
+            'structureDirectorName', 'labName', 'schoolName', 'university',
+            'selectedSubjects', 'academicYear', 'submissionDate',
+            'lifecycleState', 'status', 'lastModifiedAt', 'transitionHistory',
+            'documents', 'physicalSignedScanUploaded', 'physicalSignedScanUrl',
+            'otpSigned', 'otpSignatureHash', 'otpSignedAt'
+          ])
+        ) ||
+        (
+          isStaffUser() &&
+          incoming().userId == existing().userId &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'lifecycleState', 'status', 'oralNote', 'interviewDate',
+            'interviewLocation', 'transitionHistory', 'lastModifiedAt'
+          ])
+        )
+      );
+      allow delete: if isAdmin() && isValidId(candidateId);
+    }
+
+    // Uploaded Justification Documents & Compliance Reviews
+    match /applicationDocuments/{docId} {
+      allow get: if isValidId(docId) && isVerified() && (
+        existing().uploadedByUid == request.auth.uid || isStaffUser() || isAdmin()
+      );
+      allow list: if isVerified() && (
+        isAdmin() || isStaffUser() || resource.data.uploadedByUid == request.auth.uid
+      );
+      allow create: if isVerified() && isValidId(docId) && isValidApplicationDocument(incoming()) && (
+        isAdmin() ||
+        (incoming().uploadedByUid == request.auth.uid && incoming().status == 'pending')
+      );
+      allow update: if isVerified() && isValidId(docId) && isValidApplicationDocument(incoming()) && (
+        isAdmin() ||
+        (isStaffUser() &&
+          incoming().uploadedByUid == existing().uploadedByUid &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'status', 'reviewerUid', 'reviewerName', 'reviewedAt', 'rejectionReason'
+          ]))
+      );
+      allow delete: if isAdmin() && isValidId(docId);
+    }
+
+    // Oral Interview PVs
+    match /interviewPvs/{pvId} {
+      allow get: if isValidId(pvId) && isVerified() && (isStaffUser() || isAdmin());
+      allow list: if isVerified() && (isAdmin() || isStaffUser());
+      allow create: if isVerified() && isValidId(pvId) && isValidInterviewPv(incoming()) && (
+        isAdmin() || (isStaffUser() && incoming().supervisorUid == request.auth.uid)
+      );
+      allow update: if isVerified() && isValidId(pvId) && isValidInterviewPv(incoming()) && (
+        isAdmin() ||
+        (isStructureDirectorUser() &&
+          existing().validatedByStructure != true &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'validatedByStructure', 'validatedByUid', 'validationDate', 'structureComments'
+          ]))
+      );
+      allow delete: if isAdmin() && isValidId(pvId);
+    }
+
+    // Supervisor Relances
+    match /relances/{relanceId} {
+      allow get: if isValidId(relanceId) && isVerified() && (
+        existing().senderUid == request.auth.uid ||
+        existing().recipientEmail == request.auth.token.email ||
+        isStaffUser() ||
+        isAdmin()
+      );
+      allow list: if isVerified() && (
+        isAdmin() ||
+        isStaffUser() ||
+        resource.data.senderUid == request.auth.uid ||
+        resource.data.recipientEmail == request.auth.token.email
+      );
+      allow create: if isVerified() && isValidId(relanceId) && isValidRelance(incoming()) && (
+        isAdmin() || (isStaffUser() && incoming().senderUid == request.auth.uid)
+      );
+      allow update, delete: if isAdmin() && isValidId(relanceId);
+    }
+
+    // Immutable Audit Logs
+    match /auditLogs/{logId} {
+      allow get: if isValidId(logId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isVerified() && isValidId(logId) && isValidAuditLog(incoming()) &&
+        incoming().actorUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Notifications (Informational & Action-Required)
+    match /notifications/{notifId} {
+      allow get: if isValidId(notifId) && isVerified() && (
+        existing().recipientUid == request.auth.uid ||
+        existing().recipientEmail == request.auth.token.email ||
+        isAdmin()
+      );
+      allow list: if isVerified() && (
+        isAdmin() ||
+        resource.data.recipientUid == request.auth.uid ||
+        resource.data.recipientEmail == request.auth.token.email
+      );
+      allow create: if isVerified() && isValidId(notifId) && isValidNotification(incoming());
+      allow update: if isVerified() && isValidId(notifId) && isValidNotification(incoming()) && (
+        isAdmin() ||
+        (
+          (existing().recipientUid == request.auth.uid ||
+           existing().recipientEmail == request.auth.token.email) &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['status'])
+        )
+      );
+      allow delete: if isAdmin() && isValidId(notifId);
+    }
+
+    // Campaign Calendar Events (Public Read, Admin / Structure Director Manage)
+    match /calendarEvents/{eventId} {
+      allow get: if isValidId(eventId);
+      allow list: if true;
+      allow create, update: if isVerified() && isValidId(eventId) &&
+        isValidCalendarEvent(incoming()) && (isAdmin() || isStructureDirectorUser());
+      allow delete: if isVerified() && isValidId(eventId) && (isAdmin() || isStructureDirectorUser());
+    }
+
+    // Annual Re-registrations & Reports
+    match /reregistrations/{reregistrationId} {
+      allow get: if isValidId(reregistrationId) && isVerified() && (
+        existing().userId == request.auth.uid || isStaffUser() || isAdmin()
+      );
+      allow list: if isVerified() && (
+        isAdmin() || isStaffUser() || resource.data.userId == request.auth.uid
+      );
+      allow create: if isVerified() && isValidId(reregistrationId) && isValidReRegistration(incoming()) && (
+        isAdmin() || incoming().userId == request.auth.uid
+      );
+      allow update: if isVerified() && isValidId(reregistrationId) && isValidReRegistration(incoming()) && (
+        isAdmin() ||
+        (existing().userId == request.auth.uid && incoming().userId == existing().userId) ||
+        (isStructureDirectorUser() &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'structureApproval', 'structureComments', 'activityReport'
+          ]))
+      );
+      allow delete: if isAdmin() && isValidId(reregistrationId);
+    }
+
+    // Connection test document
+    match /test/{docId} {
+      allow get: if isValidId(docId);
+    }
+  }
+}

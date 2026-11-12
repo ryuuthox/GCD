@@ -1,0 +1,6 @@
+{
+  "name": "GCD 2.0 - Gestion Intelligente du Cycle Doctoral",
+  "description": "Plateforme modernisée d'inscription et de réinscription en doctorat conforme au CNSPCD et à la loi 09-08 avec vérification OCR, signature OTP et IA d'appariement.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
