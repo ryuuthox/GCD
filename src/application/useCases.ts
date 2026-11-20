@@ -284,7 +284,7 @@ export async function transitionApplicationStateUseCase(params: {
   if (params.targetState === 'soumise') {
     notifications.push(
       createNotificationItem({
-        recipientEmail: 'adil.hachmoud@usmba.ac.ma',
+        recipientEmail: 'driss.alaoui@usmba.ac.ma',
         recipientRole: 'directeur_these',
         triggerEvent: 'APPLICATION_SUBMITTED',
         title: `Nouvelle candidature soumise : ${updated.fullName}`,
@@ -411,7 +411,7 @@ export async function uploadApplicationDocumentUseCase(params: {
   });
 
   const notif = createNotificationItem({
-    recipientEmail: 'adil.hachmoud@usmba.ac.ma',
+    recipientEmail: 'driss.alaoui@usmba.ac.ma',
     recipientRole: 'directeur_these',
     triggerEvent: 'DOCUMENT_UPLOADED',
     title: `Nouveau document déposé par ${params.application.fullName}`,
@@ -844,7 +844,7 @@ export async function validateSubjectUseCase(params: {
   await appendAuditLogDoc(auditEntry);
 
   const notif = createNotificationItem({
-    recipientEmail: updated.supervisorEmail || 'adil.hachmoud@usmba.ac.ma',
+    recipientEmail: updated.supervisorEmail || 'driss.alaoui@usmba.ac.ma',
     recipientRole: 'directeur_these',
     triggerEvent: 'SUBJECT_DECISION',
     title:

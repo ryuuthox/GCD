@@ -163,7 +163,7 @@ export function getDocumentStatusMeta(status: DocumentValidationStatus): {
     default:
       return {
         label: 'En attente de vérification',
-        badgeClass: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+        badgeClass: 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300'
       };
   }
 }

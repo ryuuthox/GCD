@@ -26,7 +26,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Brouillon en cours',
     shortLabel: 'Brouillon',
     description: 'Le candidat complète son profil académique et dépose ses pièces justificatives.',
-    colorClass: 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300'
+    colorClass: 'bg-stone-100 text-stone-700 border-stone-300 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700'
   },
   {
     state: 'soumise',
@@ -34,7 +34,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Candidature Soumise',
     shortLabel: 'Soumise',
     description: 'Dossier soumis par le candidat, en attente de contrôle de recevabilité documentaire.',
-    colorClass: 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950 dark:text-blue-300'
+    colorClass: 'bg-teal-50 text-teal-800 border-teal-300 dark:bg-teal-950/70 dark:text-teal-300 dark:border-teal-800'
   },
   {
     state: 'verification_docs',
@@ -42,7 +42,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Vérification Documentaire',
     shortLabel: 'Vérif. Docs',
     description: 'Contrôle de conformité des diplômes, relevés de notes, CIN et projet de recherche.',
-    colorClass: 'bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-950 dark:text-sky-300'
+    colorClass: 'bg-teal-100 text-teal-900 border-teal-300 dark:bg-teal-950/80 dark:text-teal-200 dark:border-teal-800'
   },
   {
     state: 'pieces_a_completer',
@@ -50,7 +50,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Pièces à Compléter / Remplacer',
     shortLabel: 'Corrections',
     description: 'Un ou plusieurs documents ont été rejetés ou nécessitent des informations complémentaires.',
-    colorClass: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300'
+    colorClass: 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800'
   },
   {
     state: 'examen_encadrement',
@@ -58,7 +58,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Examen Scientifique (Encadrement)',
     shortLabel: 'Encadrement',
     description: 'Évaluation du dossier par l’enseignant, le directeur de thèse et le co-encadrant.',
-    colorClass: 'bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-950 dark:text-indigo-300'
+    colorClass: 'bg-stone-200/80 text-stone-900 border-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700'
   },
   {
     state: 'entretien_planifie',
@@ -66,7 +66,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Convoqué à l’Entretien Oral',
     shortLabel: 'Entretien Oral',
     description: 'Entretien scientifique programmé devant la commission de sélection.',
-    colorClass: 'bg-violet-100 text-violet-800 border-violet-300 dark:bg-violet-950 dark:text-violet-300'
+    colorClass: 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
   },
   {
     state: 'evaluee',
@@ -74,7 +74,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Évaluée (PV Rédigé)',
     shortLabel: 'Évaluée',
     description: 'Procès-verbal d’entretien oral enregistré, prêt pour transmission au Directeur de Structure.',
-    colorClass: 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-950 dark:text-purple-300'
+    colorClass: 'bg-teal-50 text-teal-900 border-teal-300 dark:bg-teal-950/60 dark:text-teal-200 dark:border-teal-800'
   },
   {
     state: 'validation_structure',
@@ -82,7 +82,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Visa Direction de Structure',
     shortLabel: 'Visa Structure',
     description: 'Dossier et PV transmis au Directeur de la Structure de Recherche pour décision officielle.',
-    colorClass: 'bg-teal-100 text-teal-800 border-teal-300 dark:bg-teal-950 dark:text-teal-300'
+    colorClass: 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
   },
   {
     state: 'liste_principale',
@@ -90,7 +90,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Admis sur Liste Principale',
     shortLabel: 'Liste Principale',
     description: 'Candidat retenu. Doit déposer la fiche d’inscription signée physiquement.',
-    colorClass: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300'
+    colorClass: 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800'
   },
   {
     state: 'liste_attente',
@@ -98,7 +98,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Liste d’Attente',
     shortLabel: 'Liste d’Attente',
     description: 'Candidat classé en liste d’attente selon le mérite scientifique.',
-    colorClass: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300'
+    colorClass: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800'
   },
   {
     state: 'inscription_validee',
@@ -106,7 +106,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Inscription Doctorale Définitive',
     shortLabel: 'Inscrit',
     description: 'Inscription administrative confirmée après dépôt du dossier signé physiquement.',
-    colorClass: 'bg-emerald-600 text-white border-emerald-700',
+    colorClass: 'bg-emerald-700 text-white border-emerald-800 dark:bg-emerald-600 dark:border-emerald-500',
     isTerminal: true
   },
   {
@@ -115,7 +115,7 @@ export const LIFECYCLE_STAGES: LifecycleStageInfo[] = [
     label: 'Candidature Rejetée',
     shortLabel: 'Rejetée',
     description: 'Candidature non retenue à l’issue de la procédure de sélection.',
-    colorClass: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950 dark:text-rose-300',
+    colorClass: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/70 dark:text-rose-300 dark:border-rose-800',
     isTerminal: true
   }
 ];

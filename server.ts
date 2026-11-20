@@ -37,10 +37,10 @@ function getGeminiClient(): GoogleGenAI | null {
   if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
     return null;
   }
-  return new GoogleGenAI();
+  return new GoogleGenAI({ apiKey });
 }
 
-// 1. AI Candidate Matcher API (Pr. Adil)
+// 1. AI Candidate Matcher API
 app.post('/api/ai/match-candidate', async (req, res) => {
   try {
     const { candidate, subject } = req.body;
@@ -424,8 +424,9 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  const host = '0.0.0.0';
+  app.listen(Number(PORT), host, () => {
+    console.log(`Server running on http://${host}:${PORT}`);
   });
 }
 

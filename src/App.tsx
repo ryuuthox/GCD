@@ -235,8 +235,8 @@ const PREVIEW_ACTOR_PROFILES: Record<GcdRole, UserProfile> = {
   },
   enseignant: {
     uid: 'preview-enseignant',
-    email: 'adil.hachmoud@usmba.ac.ma',
-    fullName: 'Pr. Adil HACHMOUD',
+    email: 'driss.alaoui@usmba.ac.ma',
+    fullName: 'Pr. Driss ALAOUI',
     roles: ['enseignant'],
     title: "Professeur de l'Enseignement Supérieur (PES)",
     lab: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
@@ -247,8 +247,8 @@ const PREVIEW_ACTOR_PROFILES: Record<GcdRole, UserProfile> = {
   },
   directeur_these: {
     uid: 'preview-directeur-these',
-    email: 'adil.hachmoud@usmba.ac.ma',
-    fullName: 'Pr. Adil HACHMOUD',
+    email: 'driss.alaoui@usmba.ac.ma',
+    fullName: 'Pr. Driss ALAOUI',
     roles: ['directeur_these', 'enseignant'],
     title: "Professeur de l'Enseignement Supérieur (PES)",
     lab: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
@@ -1345,6 +1345,8 @@ export default function App() {
           currentUser={effectiveUser}
           maxAllowed={3}
           canApply={!effectiveUser || hasPrivilege(effectiveUser, 'APPLICATION_CREATE')}
+          calendarEvents={calendarEvents}
+          onNavigateToCalendar={() => setActiveSection('calendrier')}
         />
       );
     }
@@ -1500,12 +1502,14 @@ export default function App() {
         currentUser={effectiveUser}
         maxAllowed={3}
         canApply={!effectiveUser || hasPrivilege(effectiveUser, 'APPLICATION_CREATE')}
+        calendarEvents={calendarEvents}
+        onNavigateToCalendar={() => setActiveSection('calendrier')}
       />
     );
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex flex-col bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors duration-200">
       <Header
         activeSection={activeSection}
         onSelectSection={setActiveSection}
@@ -1526,7 +1530,7 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Suspense
           fallback={
-            <div className="py-16 flex items-center justify-center text-xs text-slate-400">
+            <div className="py-16 flex items-center justify-center text-xs text-stone-500 dark:text-stone-400">
               Chargement de l’espace...
             </div>
           }
@@ -1537,16 +1541,16 @@ export default function App() {
 
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-50 p-4 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2.5 animate-in slide-in-from-bottom-5 duration-200 ${
+          className={`fixed bottom-6 right-6 z-50 p-4 rounded-xl text-xs font-semibold shadow-xl border flex items-center gap-2.5 animate-in slide-in-from-bottom-5 duration-200 ${
             toast.isError
-              ? 'bg-rose-700 text-white'
-              : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
+              ? 'bg-rose-700 text-white border-rose-600'
+              : 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-800 dark:border-stone-200'
           }`}
         >
           {toast.isError ? (
             <AlertCircle className="w-4 h-4 shrink-0" />
           ) : (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-emerald-700 shrink-0" />
           )}
           <span>{toast.message}</span>
         </div>
@@ -1558,10 +1562,6 @@ export default function App() {
         targetSubject={selectedSubjects[0] || null}
         targetSubjects={selectedSubjects}
         onAuthSuccess={handleAuthSuccess}
-        onQuickPreviewActor={(role, section) => {
-          setPreviewActorRole(role);
-          setActiveSection(section);
-        }}
       />
 
       <Suspense fallback={null}>
@@ -1576,27 +1576,27 @@ export default function App() {
         )}
 
         {otpModalOpen && (
-            <OtpSignatureModal
-              isOpen={otpModalOpen}
-              onClose={() => setOtpModalOpen(false)}
-              documentTitle="Fiche d'Inscription, Charte des Thèses & Engagement sur l'Honneur"
-              signatoryName={effectiveUser?.fullName || currentCandidate.fullName}
-              signatoryRole={`Candidat Doctorat (CIN: ${effectiveUser?.cin || currentCandidate.cin})`}
-              onSignComplete={handleOtpSignComplete}
-            />
+          <OtpSignatureModal
+            isOpen={otpModalOpen}
+            onClose={() => setOtpModalOpen(false)}
+            documentTitle="Fiche d'Inscription, Charte des Thèses & Engagement sur l'Honneur"
+            signatoryName={effectiveUser?.fullName || currentCandidate.fullName}
+            signatoryRole={`Candidat Doctorat (CIN: ${effectiveUser?.cin || currentCandidate.cin})`}
+            onSignComplete={handleOtpSignComplete}
+          />
         )}
       </Suspense>
 
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 text-xs text-slate-500 dark:text-slate-400 mt-12 transition-colors">
+      <footer className="border-t border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 py-6 text-xs text-stone-500 dark:text-stone-400 mt-12 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="font-bold text-slate-900 dark:text-white">GCD</span>
-            <span>·</span>
+            <span className="font-bold text-stone-900 dark:text-white">GCD</span>
+            <span aria-hidden="true">·</span>
             <span>Plateforme de Gestion du Cycle Doctoral</span>
           </div>
           <div className="flex items-center gap-4">
             <span>Décret 1886.23 & Loi 09-08 CNDP</span>
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             <span>Universités du Royaume du Maroc</span>
           </div>
         </div>

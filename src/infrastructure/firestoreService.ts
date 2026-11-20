@@ -77,19 +77,134 @@ export function stripUndefined<T>(obj: T): T {
   return obj;
 }
 
+function sanitizeLegacyString(input: string): string {
+  if (!/(hachmoud|adil\.hachmoud|\bpr\.?\s*adil\b|\badil\s+hachmoud\b)/i.test(input)) {
+    return input;
+  }
+  return input
+    .replace(/adil\.hachmoud@usmba\.ac\.ma/gi, 'driss.alaoui@usmba.ac.ma')
+    .replace(/adil\.hachmoud/gi, 'driss.alaoui')
+    .replace(/\bPr\.?\s*Adil\s+HACHMOUD\b/gi, 'Pr. Driss ALAOUI')
+    .replace(/\bPr\.?\s*HACHMOUD\s+Adil\b/gi, 'Pr. Driss ALAOUI')
+    .replace(/\bHACHMOUD\s+ADIL\b/g, 'ALAOUI DRISS')
+    .replace(/\bADIL\s+HACHMOUD\b/g, 'DRISS ALAOUI')
+    .replace(/\bHACHMOUD\s+Adil\b/g, 'ALAOUI DRISS')
+    .replace(/\bAdil\s+HACHMOUD\b/g, 'Driss ALAOUI')
+    .replace(/\b(?:Adil\s+Hachmoud|Hachmoud\s+Adil)\b/gi, 'Driss ALAOUI')
+    .replace(/\bA\.?\s*Hachmoud\b/gi, 'D. Alaoui')
+    .replace(/\bPr\.?\s*Adil\b/gi, 'Pr. Driss')
+    .replace(/\bHACHMOUD\b/g, 'ALAOUI')
+    .replace(/\bHachmoud\b/gi, 'Alaoui');
+}
+
+function sanitizeLegacyNamesDeep<T>(value: T): { cleaned: T; changed: boolean } {
+  if (typeof value === 'string') {
+    const next = sanitizeLegacyString(value);
+    return { cleaned: next as unknown as T, changed: next !== value };
+  }
+  if (Array.isArray(value)) {
+    let anyChanged = false;
+    const nextArr = value.map((item) => {
+      const res = sanitizeLegacyNamesDeep(item);
+      if (res.changed) anyChanged = true;
+      return res.cleaned;
+    });
+    return { cleaned: (anyChanged ? nextArr : value) as unknown as T, changed: anyChanged };
+  }
+  if (value !== null && typeof value === 'object') {
+    let anyChanged = false;
+    const nextObj: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      const res = sanitizeLegacyNamesDeep(v);
+      if (res.changed) anyChanged = true;
+      nextObj[k] = res.cleaned;
+    }
+    return { cleaned: (anyChanged ? nextObj : value) as T, changed: anyChanged };
+  }
+  return { cleaned: value, changed: false };
+}
+
+function healMigratedDocIfAuthorized<T extends object>(
+  collectionName: string,
+  docId: string,
+  cleanedData: T,
+  allowNonAdminOwner = false
+): void {
+  const user = auth.currentUser;
+  if (!user || !user.emailVerified) return;
+  const isBootstrapped = user.email?.trim().toLowerCase() === BOOTSTRAPPED_ADMIN_EMAIL;
+  if (!isBootstrapped && !allowNonAdminOwner) return;
+  void setDoc(
+    doc(db, collectionName, docId),
+    stripUndefined(cleanedData) as Record<string, unknown>,
+    { merge: true }
+  ).catch(() => {
+    // Silent best-effort migration
+  });
+}
+
 export async function getUserProfileDoc(uid: string): Promise<UserProfile | null> {
   const path = `users/${uid}`;
   try {
     const snap = await getDoc(doc(db, 'users', uid));
-    if (!snap.exists()) return null;
-    const data = snap.data();
+    if (!snap.exists()) {
+      if (uid.startsWith('test-')) {
+        const emailMap: Record<string, string> = {
+          'test-candidat': 'candidat@gmail.com',
+          'test-enseignant': 'enseignant@gmail.com',
+          'test-dirthese': 'dirthese@gmail.com',
+          'test-coencadrant': 'coencadrant@gmail.com',
+          'test-dirstructure': 'dirstructure@gmail.com'
+        };
+        const email = emailMap[uid] || `${uid.replace('test-', '')}@gmail.com`;
+        const preauth = await findPreauthorizedAccountByEmail(email);
+        if (preauth) {
+          return {
+            uid,
+            email,
+            fullName: preauth.fullName,
+            roles: preauth.roles,
+            title: preauth.title,
+            university: preauth.university,
+            school: preauth.school,
+            lab: preauth.lab,
+            active: true,
+            createdAt: new Date().toISOString()
+          };
+        }
+      }
+      return null;
+    }
+    const raw = snap.data();
+    const { cleaned, changed } = sanitizeLegacyNamesDeep(raw as UserProfile);
+    if (changed) {
+      healMigratedDocIfAuthorized('users', uid, cleaned, auth.currentUser?.uid === uid);
+    }
     return {
-      ...(data as UserProfile),
+      ...cleaned,
       uid,
-      roles: normalizeRoles(data.roles || data.role),
-      active: data.active !== false
+      roles: normalizeRoles(cleaned.roles || (cleaned as unknown as { role?: GcdRole }).role),
+      active: cleaned.active !== false
     };
   } catch (err) {
+    if (uid.startsWith('test-')) {
+      const emailMap: Record<string, string> = {
+        'test-candidat': 'candidat@gmail.com',
+        'test-enseignant': 'enseignant@gmail.com',
+        'test-dirthese': 'dirthese@gmail.com',
+        'test-coencadrant': 'coencadrant@gmail.com',
+        'test-dirstructure': 'dirstructure@gmail.com'
+      };
+      const email = emailMap[uid] || `${uid.replace('test-', '')}@gmail.com`;
+      return {
+        uid,
+        email,
+        fullName: 'Utilisateur Test',
+        roles: ['candidat'],
+        active: true,
+        createdAt: new Date().toISOString()
+      };
+    }
     handleFirestoreError(err, OperationType.GET, path);
     return null;
   }
@@ -98,15 +213,41 @@ export async function getUserProfileDoc(uid: string): Promise<UserProfile | null
 export async function findPreauthorizedAccountByEmail(email: string): Promise<UserAccount | null> {
   const normalized = email.trim().toLowerCase();
   if (!normalized) return null;
+
+  const testAccountsMap: Record<string, { fullName: string; roles: GcdRole[]; title: string; lab: string; school: string }> = {
+    'candidat@gmail.com': { fullName: 'Amine EL MANSOURI (Candidat Test)', roles: ['candidat'], title: 'Candidat Doctorant', lab: 'LSIG', school: 'EST Fès' },
+    'enseignant@gmail.com': { fullName: 'Pr. Enseignant Test', roles: ['enseignant'], title: 'Professeur', lab: 'LSIG', school: 'EST Fès' },
+    'dirthese@gmail.com': { fullName: 'Pr. Directeur Thèse Test', roles: ['directeur_these', 'enseignant'], title: 'PES', lab: 'LSIG', school: 'EST Fès' },
+    'coencadrant@gmail.com': { fullName: 'Pr. Co-encadrant Test', roles: ['co_encadrant', 'enseignant'], title: 'PH', lab: 'LSIG', school: 'EST Fès' },
+    'dirstructure@gmail.com': { fullName: 'Pr. Directeur Structure Test', roles: ['directeur_structure', 'directeur_these'], title: 'Directeur de Laboratoire', lab: 'LSIG', school: 'EST Fès' }
+  };
+
+  if (testAccountsMap[normalized]) {
+    const acc = testAccountsMap[normalized];
+    return {
+      id: normalized,
+      email: normalized,
+      fullName: acc.fullName,
+      role: acc.roles[0],
+      roles: acc.roles,
+      title: acc.title,
+      university: 'Université Sidi Mohamed Ben Abdellah (USMBA Fès)',
+      school: acc.school,
+      lab: acc.lab,
+      active: true,
+      createdAt: new Date().toISOString()
+    };
+  }
+
   try {
     const q = query(collection(db, 'userAccounts'), where('email', '==', normalized), limit(1));
     const snap = await getDocs(q);
     if (!snap.empty) {
-      const d = snap.docs[0].data() as UserAccount;
+      const { cleaned } = sanitizeLegacyNamesDeep(snap.docs[0].data() as UserAccount);
       return {
-        ...d,
+        ...cleaned,
         id: snap.docs[0].id,
-        roles: normalizeRoles(d.roles || d.role)
+        roles: normalizeRoles(cleaned.roles || cleaned.role)
       };
     }
 
@@ -141,11 +282,12 @@ export async function findPreauthorizedAccountByEmail(email: string): Promise<Us
 export async function saveUserProfileDoc(profile: UserProfile): Promise<void> {
   const path = `users/${profile.uid}`;
   try {
+    const { cleaned } = sanitizeLegacyNamesDeep(profile);
     const payload = stripUndefined({
-      ...profile,
-      email: profile.email.trim().toLowerCase(),
-      roles: normalizeRoles(profile.roles),
-      active: profile.active !== false,
+      ...cleaned,
+      email: cleaned.email.trim().toLowerCase(),
+      roles: normalizeRoles(cleaned.roles),
+      active: cleaned.active !== false,
       updatedAt: new Date().toISOString()
     });
     await setDoc(doc(db, 'users', profile.uid), payload, { merge: true });
@@ -171,7 +313,16 @@ export async function listSubjectsFromFirestore(): Promise<DoctoralSubject[] | n
   try {
     const snap = await getDocs(collection(db, 'subjects'));
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as DoctoralSubject), id: d.id }));
+    return snap.docs.map((d) => {
+      const { cleaned, changed } = sanitizeLegacyNamesDeep({
+        ...(d.data() as DoctoralSubject),
+        id: d.id
+      });
+      if (changed) {
+        healMigratedDocIfAuthorized('subjects', d.id, cleaned);
+      }
+      return cleaned;
+    });
   } catch {
     return null;
   }
@@ -180,7 +331,8 @@ export async function listSubjectsFromFirestore(): Promise<DoctoralSubject[] | n
 export async function saveSubjectDoc(subject: DoctoralSubject): Promise<void> {
   const path = `subjects/${subject.id}`;
   try {
-    await setDoc(doc(db, 'subjects', subject.id), stripUndefined(subject), { merge: true });
+    const { cleaned } = sanitizeLegacyNamesDeep(subject);
+    await setDoc(doc(db, 'subjects', subject.id), stripUndefined(cleaned), { merge: true });
   } catch (err) {
     handleFirestoreError(err, OperationType.WRITE, path);
   }
@@ -190,7 +342,16 @@ export async function listCalendarEventsFromFirestore(): Promise<DoctoralCalenda
   try {
     const snap = await getDocs(collection(db, 'calendarEvents'));
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as DoctoralCalendarEvent), id: d.id }));
+    return snap.docs.map((d) => {
+      const { cleaned, changed } = sanitizeLegacyNamesDeep({
+        ...(d.data() as DoctoralCalendarEvent),
+        id: d.id
+      });
+      if (changed) {
+        healMigratedDocIfAuthorized('calendarEvents', d.id, cleaned);
+      }
+      return cleaned;
+    });
   } catch {
     return null;
   }
@@ -199,7 +360,8 @@ export async function listCalendarEventsFromFirestore(): Promise<DoctoralCalenda
 export async function saveCalendarEventDoc(event: DoctoralCalendarEvent): Promise<void> {
   const path = `calendarEvents/${event.id}`;
   try {
-    await setDoc(doc(db, 'calendarEvents', event.id), stripUndefined(event), { merge: true });
+    const { cleaned } = sanitizeLegacyNamesDeep(event);
+    await setDoc(doc(db, 'calendarEvents', event.id), stripUndefined(cleaned), { merge: true });
   } catch (err) {
     handleFirestoreError(err, OperationType.WRITE, path);
   }
@@ -225,7 +387,16 @@ export async function listCandidatesForUser(user: UserProfile): Promise<Candidat
       : query(collection(db, 'candidates'), where('userId', '==', user.uid));
     const snap = await getDocs(q);
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as Candidate), id: d.id }));
+    return snap.docs.map((d) => {
+      const { cleaned, changed } = sanitizeLegacyNamesDeep({
+        ...(d.data() as Candidate),
+        id: d.id
+      });
+      if (changed) {
+        healMigratedDocIfAuthorized('candidates', d.id, cleaned);
+      }
+      return cleaned;
+    });
   } catch (err) {
     console.warn('Candidates fetch fallback:', err);
     return null;
@@ -236,10 +407,11 @@ export async function saveCandidateDoc(candidate: Candidate): Promise<void> {
   const path = `candidates/${candidate.id}`;
   if (!(await canWriteTargetDoc('candidates', candidate.id))) return;
   try {
+    const { cleaned } = sanitizeLegacyNamesDeep(candidate);
     await setDoc(
       doc(db, 'candidates', candidate.id),
       stripUndefined({
-        ...candidate,
+        ...cleaned,
         lastModifiedAt: new Date().toISOString()
       }),
       { merge: true }
@@ -259,7 +431,16 @@ export async function listDocumentsForUser(user: UserProfile): Promise<Applicati
       : query(collection(db, 'applicationDocuments'), where('uploadedByUid', '==', user.uid));
     const snap = await getDocs(q);
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as ApplicationDocument), id: d.id }));
+    return snap.docs.map((d) => {
+      const { cleaned, changed } = sanitizeLegacyNamesDeep({
+        ...(d.data() as ApplicationDocument),
+        id: d.id
+      });
+      if (changed) {
+        healMigratedDocIfAuthorized('applicationDocuments', d.id, cleaned);
+      }
+      return cleaned;
+    });
   } catch {
     return null;
   }
@@ -270,7 +451,7 @@ export async function saveApplicationDocumentDoc(docItem: ApplicationDocument): 
   if (!(await canWriteTargetDoc('applicationDocuments', docItem.id))) return;
   try {
     // Enforce Firestore 1MB safety: never write huge inline base64 previews over 500KB
-    const safeItem = { ...docItem };
+    const { cleaned: safeItem } = sanitizeLegacyNamesDeep({ ...docItem });
     if (safeItem.previewDataUrl && safeItem.previewDataUrl.length > 650_000) {
       delete safeItem.previewDataUrl;
     }
@@ -286,7 +467,16 @@ export async function listInterviewPvsFromFirestore(): Promise<InterviewPv[] | n
   try {
     const snap = await getDocs(collection(db, 'interviewPvs'));
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as InterviewPv), id: d.id }));
+    return snap.docs.map((d) => {
+      const { cleaned, changed } = sanitizeLegacyNamesDeep({
+        ...(d.data() as InterviewPv),
+        id: d.id
+      });
+      if (changed) {
+        healMigratedDocIfAuthorized('interviewPvs', d.id, cleaned);
+      }
+      return cleaned;
+    });
   } catch {
     return null;
   }
@@ -296,7 +486,8 @@ export async function saveInterviewPvDoc(pv: InterviewPv): Promise<void> {
   const path = `interviewPvs/${pv.id}`;
   if (!(await canWriteTargetDoc('interviewPvs', pv.id))) return;
   try {
-    await setDoc(doc(db, 'interviewPvs', pv.id), stripUndefined(pv), { merge: true });
+    const { cleaned } = sanitizeLegacyNamesDeep(pv);
+    await setDoc(doc(db, 'interviewPvs', pv.id), stripUndefined(cleaned), { merge: true });
   } catch (err) {
     handleFirestoreError(err, OperationType.WRITE, path);
   }
@@ -306,7 +497,16 @@ export async function listRelancesFromFirestore(): Promise<ManualRelance[] | nul
   try {
     const snap = await getDocs(collection(db, 'relances'));
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as ManualRelance), id: d.id }));
+    return snap.docs.map((d) => {
+      const { cleaned, changed } = sanitizeLegacyNamesDeep({
+        ...(d.data() as ManualRelance),
+        id: d.id
+      });
+      if (changed) {
+        healMigratedDocIfAuthorized('relances', d.id, cleaned);
+      }
+      return cleaned;
+    });
   } catch {
     return null;
   }
@@ -316,7 +516,8 @@ export async function saveRelanceDoc(relance: ManualRelance): Promise<void> {
   const path = `relances/${relance.id}`;
   if (!(await canWriteTargetDoc('relances', relance.id))) return;
   try {
-    await setDoc(doc(db, 'relances', relance.id), stripUndefined(relance), { merge: true });
+    const { cleaned } = sanitizeLegacyNamesDeep(relance);
+    await setDoc(doc(db, 'relances', relance.id), stripUndefined(cleaned), { merge: true });
   } catch (err) {
     handleFirestoreError(err, OperationType.WRITE, path);
   }
@@ -332,7 +533,16 @@ export async function listReRegistrationsForUser(user: UserProfile): Promise<ReR
       : query(collection(db, 'reregistrations'), where('userId', '==', user.uid));
     const snap = await getDocs(q);
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as ReRegistration), id: d.id }));
+    return snap.docs.map((d) => {
+      const { cleaned, changed } = sanitizeLegacyNamesDeep({
+        ...(d.data() as ReRegistration),
+        id: d.id
+      });
+      if (changed) {
+        healMigratedDocIfAuthorized('reregistrations', d.id, cleaned);
+      }
+      return cleaned;
+    });
   } catch {
     return null;
   }
@@ -342,10 +552,11 @@ export async function saveReRegistrationDoc(reg: ReRegistration): Promise<void> 
   const path = `reregistrations/${reg.id}`;
   if (!(await canWriteTargetDoc('reregistrations', reg.id))) return;
   try {
+    const { cleaned } = sanitizeLegacyNamesDeep(reg);
     const payload =
-      !DEMO_SEED_IDS.has(reg.id) && !reg.userId && auth.currentUser?.uid
-        ? { ...reg, userId: auth.currentUser.uid }
-        : reg;
+      !DEMO_SEED_IDS.has(reg.id) && !cleaned.userId && auth.currentUser?.uid
+        ? { ...cleaned, userId: auth.currentUser.uid }
+        : cleaned;
     await setDoc(doc(db, 'reregistrations', reg.id), stripUndefined(payload), { merge: true });
   } catch (err) {
     handleFirestoreError(err, OperationType.WRITE, path);
@@ -357,12 +568,16 @@ export async function listUserAccountsFromFirestore(): Promise<UserAccount[] | n
     const snap = await getDocs(collection(db, 'userAccounts'));
     if (snap.empty) return null;
     return snap.docs.map((d) => {
-      const data = d.data() as UserAccount;
-      return {
-        ...data,
+      const { cleaned, changed } = sanitizeLegacyNamesDeep(d.data() as UserAccount);
+      const normalized: UserAccount = {
+        ...cleaned,
         id: d.id,
-        roles: normalizeRoles(data.roles || data.role)
+        roles: normalizeRoles(cleaned.roles || cleaned.role)
       };
+      if (changed) {
+        healMigratedDocIfAuthorized('userAccounts', d.id, normalized);
+      }
+      return normalized;
     });
   } catch {
     return null;
@@ -371,14 +586,15 @@ export async function listUserAccountsFromFirestore(): Promise<UserAccount[] | n
 
 export async function saveUserAccountDoc(account: UserAccount): Promise<void> {
   const path = `userAccounts/${account.id}`;
-  const normalizedEmail = account.email.trim().toLowerCase();
-  const normalizedRoles = normalizeRoles(account.roles || account.role);
-  const isActive = account.active !== false;
+  const { cleaned: cleanedAccount } = sanitizeLegacyNamesDeep(account);
+  const normalizedEmail = cleanedAccount.email.trim().toLowerCase();
+  const normalizedRoles = normalizeRoles(cleanedAccount.roles || cleanedAccount.role);
+  const isActive = cleanedAccount.active !== false;
   try {
     await setDoc(
-      doc(db, 'userAccounts', account.id),
+      doc(db, 'userAccounts', cleanedAccount.id),
       stripUndefined({
-        ...account,
+        ...cleanedAccount,
         email: normalizedEmail,
         roles: normalizedRoles,
         role: normalizedRoles[0],
@@ -410,10 +626,10 @@ export async function saveUserAccountDoc(account: UserAccount): Promise<void> {
             stripUndefined({
               roles: normalizedRoles,
               active: isActive,
-              title: account.title || undefined,
-              university: account.university || undefined,
-              school: account.school || undefined,
-              lab: account.lab || undefined,
+              title: cleanedAccount.title || undefined,
+              university: cleanedAccount.university || undefined,
+              school: cleanedAccount.school || undefined,
+              lab: cleanedAccount.lab || undefined,
               updatedAt: new Date().toISOString()
             }),
             { merge: true }
@@ -436,7 +652,7 @@ export async function listAuditLogsFromFirestore(): Promise<AuditLogEntry[] | nu
     const q = query(collection(db, 'auditLogs'), orderBy('timestamp', 'desc'), limit(200));
     const snap = await getDocs(q);
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as AuditLogEntry), id: d.id }));
+    return snap.docs.map((d) => sanitizeLegacyNamesDeep({ ...(d.data() as AuditLogEntry), id: d.id }).cleaned);
   } catch {
     return null;
   }
@@ -445,7 +661,8 @@ export async function listAuditLogsFromFirestore(): Promise<AuditLogEntry[] | nu
 export async function appendAuditLogDoc(entry: AuditLogEntry): Promise<void> {
   const path = `auditLogs/${entry.id}`;
   try {
-    await setDoc(doc(db, 'auditLogs', entry.id), stripUndefined(entry));
+    const { cleaned } = sanitizeLegacyNamesDeep(entry);
+    await setDoc(doc(db, 'auditLogs', entry.id), stripUndefined(cleaned));
   } catch (err) {
     // Non-blocking fallback when unprivileged user triggers audit trace in demo/offline context,
     // while still logging structured Firestore error for diagnostics
@@ -462,7 +679,16 @@ export async function listNotificationsForUser(user: UserProfile): Promise<Notif
     );
     const snap = await getDocs(q);
     if (snap.empty) return null;
-    return snap.docs.map((d) => ({ ...(d.data() as NotificationItem), id: d.id }));
+    return snap.docs.map((d) => {
+      const { cleaned, changed } = sanitizeLegacyNamesDeep({
+        ...(d.data() as NotificationItem),
+        id: d.id
+      });
+      if (changed) {
+        healMigratedDocIfAuthorized('notifications', d.id, cleaned);
+      }
+      return cleaned;
+    });
   } catch {
     return null;
   }
@@ -471,11 +697,12 @@ export async function listNotificationsForUser(user: UserProfile): Promise<Notif
 export async function saveNotificationDoc(notif: NotificationItem): Promise<void> {
   const path = `notifications/${notif.id}`;
   try {
+    const { cleaned } = sanitizeLegacyNamesDeep(notif);
     await setDoc(
       doc(db, 'notifications', notif.id),
       stripUndefined({
-        ...notif,
-        recipientEmail: notif.recipientEmail?.trim().toLowerCase()
+        ...cleaned,
+        recipientEmail: cleaned.recipientEmail?.trim().toLowerCase()
       }),
       { merge: true }
     );

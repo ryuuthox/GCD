@@ -35,107 +35,91 @@ interface NavItemConfig {
   label: string;
   mobileLabel: string;
   icon?: React.ComponentType<{ className?: string }>;
-  activeClass: string;
 }
 
 const NAV_ITEMS: NavItemConfig[] = [
   {
     section: 'catalogue',
     label: 'Catalogue Sujets',
-    mobileLabel: 'Catalogue',
-    activeClass: 'bg-blue-600 text-white shadow-xs'
+    mobileLabel: 'Catalogue'
   },
   {
     section: 'calendrier',
     label: 'Calendrier',
     mobileLabel: 'Calendrier',
-    icon: Calendar,
-    activeClass: 'bg-blue-600 text-white shadow-xs'
+    icon: Calendar
   },
   {
     section: 'mon_dossier',
     label: 'Mon Dossier',
     mobileLabel: 'Dossier',
-    icon: FileCheck2,
-    activeClass: 'bg-blue-600 text-white shadow-xs'
+    icon: FileCheck2
   },
   {
     section: 'reinscription',
-    label: 'Réinscription & Rapport',
+    label: 'Réinscription',
     mobileLabel: 'Réinscription',
-    icon: Award,
-    activeClass: 'bg-blue-600 text-white shadow-xs'
+    icon: Award
   },
   {
     section: 'candidatures_encadrant',
-    label: 'Candidatures & Aperçu',
+    label: 'Candidatures',
     mobileLabel: 'Candidatures',
-    icon: BookOpen,
-    activeClass: 'bg-indigo-600 text-white shadow-xs'
+    icon: BookOpen
   },
   {
     section: 'mes_sujets',
     label: 'Mes Sujets',
-    mobileLabel: 'Sujets',
-    activeClass: 'bg-indigo-600 text-white shadow-xs'
+    mobileLabel: 'Sujets'
   },
   {
     section: 'pv_entretiens',
     label: 'PV Entretiens',
-    mobileLabel: 'PV',
-    activeClass: 'bg-indigo-600 text-white shadow-xs'
+    mobileLabel: 'PV'
   },
   {
     section: 'relances_encadrant',
     label: 'Relances',
     mobileLabel: 'Relances',
-    icon: Send,
-    activeClass: 'bg-indigo-600 text-white shadow-xs'
+    icon: Send
   },
   {
     section: 'validation_pv',
     label: 'Visa PV',
     mobileLabel: 'Visa PV',
-    icon: FileCheck2,
-    activeClass: 'bg-emerald-600 text-white shadow-xs'
+    icon: FileCheck2
   },
   {
     section: 'validation_sujets',
     label: 'Validation Sujets',
-    mobileLabel: 'Val. Sujets',
-    activeClass: 'bg-emerald-600 text-white shadow-xs'
+    mobileLabel: 'Val. Sujets'
   },
   {
     section: 'validation_rapports',
     label: 'Validation Rapports',
-    mobileLabel: 'Rapports',
-    activeClass: 'bg-emerald-600 text-white shadow-xs'
+    mobileLabel: 'Rapports'
   },
   {
     section: 'profils_candidats',
     label: 'Profils Candidats',
-    mobileLabel: 'Profils',
-    activeClass: 'bg-emerald-600 text-white shadow-xs'
+    mobileLabel: 'Profils'
   },
   {
     section: 'gestion_comptes',
     label: 'Comptes & RBAC',
     mobileLabel: 'Comptes',
-    icon: Shield,
-    activeClass: 'bg-purple-600 text-white shadow-xs'
+    icon: Shield
   },
   {
     section: 'audit_logs',
     label: 'Journal d’Audit',
     mobileLabel: 'Audit',
-    icon: History,
-    activeClass: 'bg-purple-600 text-white shadow-xs'
+    icon: History
   },
   {
     section: 'universites_structures',
     label: 'Universités & Labos',
-    mobileLabel: 'Labos',
-    activeClass: 'bg-purple-600 text-white shadow-xs'
+    mobileLabel: 'Labos'
   }
 ];
 
@@ -147,12 +131,10 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAuthModal,
   currentUser,
   onLogout,
-  candidate,
   unreadNotificationsCount = 0,
   isPreviewMode = false,
   onExitPreview
 }) => {
-  // Dynamically compute authorized navigation tabs purely from domain privileges
   const authorizedNavItems = NAV_ITEMS.filter((item) =>
     canAccessSection(currentUser, item.section)
   );
@@ -161,34 +143,25 @@ export const Header: React.FC<HeaderProps> = ({
   const primaryRoleDef = ROLE_DEFINITIONS[primaryRole];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors shadow-xs">
+    <header className="sticky top-0 z-40 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3">
-          {/* Brand Logo */}
-          <div
+        <div className="flex items-center justify-between h-16 gap-6">
+          {/* Zone 1: Clean Single-Line Brand Wordmark */}
+          <button
+            type="button"
             onClick={() => onSelectSection('catalogue')}
-            className="flex items-center gap-3 shrink-0 cursor-pointer group"
+            className="flex items-center gap-2.5 shrink-0 cursor-pointer group text-left whitespace-nowrap"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-800 to-indigo-700 text-white flex items-center justify-center font-black text-sm shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <span className="w-8 h-8 rounded-lg bg-emerald-700 dark:bg-emerald-600 text-white flex items-center justify-center font-extrabold text-xs tracking-tight transition-transform group-hover:scale-105">
               GCD
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 dark:text-white uppercase">
-                  Cycle Doctoral
-                </span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                  USMBA
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-                Plateforme Nationale · Gestion Doctorale
-              </p>
-            </div>
-          </div>
+            </span>
+            <span className="font-display text-base font-extrabold tracking-tight text-stone-900 dark:text-stone-100 whitespace-nowrap shrink-0">
+              Cycle Doctoral
+            </span>
+          </button>
 
-          {/* Privilege-driven Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1 overflow-x-auto py-1 no-scrollbar">
+          {/* Zone 2: Clean Typographic Navigation */}
+          <nav className="hidden md:flex items-center gap-5 overflow-x-auto no-scrollbar h-full">
             {authorizedNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.section;
@@ -197,71 +170,66 @@ export const Header: React.FC<HeaderProps> = ({
                   key={item.section}
                   type="button"
                   onClick={() => onSelectSection(item.section)}
-                  className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
+                  className={`h-full px-1 text-xs font-semibold flex items-center gap-1.5 whitespace-nowrap shrink-0 border-b-2 transition-colors ${
                     isActive
-                      ? item.activeClass
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ? 'border-emerald-700 dark:border-emerald-400 text-emerald-800 dark:text-emerald-300'
+                      : 'border-transparent text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
                   }`}
                 >
                   {Icon && <Icon className="w-3.5 h-3.5 shrink-0" />}
                   <span>{item.label}</span>
-                  {item.section === 'mon_dossier' && candidate?.otpSigned && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  )}
                 </button>
               );
             })}
           </nav>
 
-          {/* Right Controls */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Notification Bell (when authenticated and permitted) */}
+          {/* Zone 3: Primary Action & Utility Controls */}
+          <div className="flex items-center gap-2 shrink-0">
             {currentUser && canAccessSection(currentUser, 'notifications') && (
               <button
                 type="button"
                 onClick={() => onSelectSection('notifications')}
                 title="Centre de Notifications"
-                className={`relative p-2 rounded-xl transition-colors ${
+                className={`relative p-2 rounded-lg transition-colors whitespace-nowrap shrink-0 ${
                   activeSection === 'notifications'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    ? 'bg-emerald-700 text-white dark:bg-emerald-600'
+                    : 'text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
                 }`}
               >
                 <Bell className="w-4 h-4" />
                 {unreadNotificationsCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-rose-600 text-white text-[9px] font-bold flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-rose-600 text-white text-[9px] font-bold flex items-center justify-center tabular-nums">
                     {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
                   </span>
                 )}
               </button>
             )}
 
-            {/* Dark / Light Toggle */}
             <button
               type="button"
               onClick={onToggleDarkMode}
               title={isDarkMode ? 'Activer mode clair' : 'Activer mode sombre'}
-              className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+              className="p-2 text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors shrink-0"
             >
               {isDarkMode ? (
                 <Sun className="w-4 h-4 text-amber-400" />
               ) : (
-                <Moon className="w-4 h-4 text-slate-600" />
+                <Moon className="w-4 h-4 text-stone-600" />
               )}
             </button>
 
-            {/* User Profile */}
             {currentUser ? (
-              <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5 pl-2.5 border-l border-stone-200 dark:border-stone-800 shrink-0">
                 {currentUser.photoURL ? (
                   <img
                     src={currentUser.photoURL}
                     alt={currentUser.fullName}
-                    className="w-8 h-8 rounded-full ring-2 ring-blue-600/20 object-cover shrink-0"
+                    referrerPolicy="no-referrer"
+                    className="w-8 h-8 rounded-full ring-2 ring-emerald-700/20 object-cover shrink-0"
                   />
                 ) : (
                   <div
-                    className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold ring-2 ring-blue-600/20 shrink-0"
+                    className="w-8 h-8 rounded-full bg-emerald-700 dark:bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0"
                     title={currentUser.fullName}
                   >
                     {currentUser.fullName.charAt(0)}
@@ -269,24 +237,13 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
 
                 <div className="hidden sm:block text-left">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white block truncate max-w-[135px]">
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-100 block truncate max-w-[140px]">
                     {currentUser.fullName}
                   </span>
-                  <div className="flex items-center gap-1">
-                    <span
-                      className={`inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold ${primaryRoleDef.badgeColor}`}
-                    >
-                      {primaryRoleDef.label}
-                    </span>
-                    {currentUser.roles.length > 1 && (
-                      <span
-                        className="px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-[9px] font-bold text-slate-600 dark:text-slate-300"
-                        title={currentUser.roles.map((r) => ROLE_DEFINITIONS[r].label).join(', ')}
-                      >
-                        +{currentUser.roles.length - 1}
-                      </span>
-                    )}
-                  </div>
+                  <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400 block whitespace-nowrap">
+                    {primaryRoleDef.label}
+                    {currentUser.roles.length > 1 ? ` · +${currentUser.roles.length - 1}` : ''}
+                  </span>
                 </div>
 
                 {isPreviewMode && onExitPreview ? (
@@ -294,7 +251,7 @@ export const Header: React.FC<HeaderProps> = ({
                     type="button"
                     onClick={onExitPreview}
                     title="Quitter l’aperçu temporaire"
-                    className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900 transition-colors ml-1"
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900 transition-colors whitespace-nowrap shrink-0"
                   >
                     Quitter aperçu
                   </button>
@@ -304,9 +261,9 @@ export const Header: React.FC<HeaderProps> = ({
                       type="button"
                       onClick={onLogout}
                       title="Se déconnecter"
-                      className="p-1.5 text-slate-400 hover:text-rose-600 transition-colors ml-1"
+                      className="p-1.5 text-stone-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors shrink-0"
                     >
-                      <LogOut className="w-3.5 h-3.5" />
+                      <LogOut className="w-4 h-4" />
                     </button>
                   )
                 )}
@@ -315,7 +272,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 type="button"
                 onClick={onOpenAuthModal}
-                className="px-3.5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl flex items-center gap-1.5 shadow-xs transition-all"
+                className="px-4 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 active:scale-95 rounded-lg flex items-center gap-1.5 transition-all whitespace-nowrap shrink-0"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span>Se connecter</span>
@@ -324,17 +281,17 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Privilege-driven Mobile Navigation */}
-        <div className="flex md:hidden items-center gap-1 overflow-x-auto py-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+        {/* Mobile Navigation */}
+        <div className="flex md:hidden items-center gap-3 overflow-x-auto py-2 border-t border-stone-100 dark:border-stone-800 text-xs no-scrollbar">
           {authorizedNavItems.map((item) => (
             <button
               key={item.section}
               type="button"
               onClick={() => onSelectSection(item.section)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${
+              className={`px-2 py-1 text-xs font-semibold whitespace-nowrap shrink-0 border-b-2 transition-colors ${
                 activeSection === item.section
-                  ? item.activeClass
-                  : 'text-slate-600 dark:text-slate-300'
+                  ? 'border-emerald-700 dark:border-emerald-400 text-emerald-800 dark:text-emerald-300'
+                  : 'border-transparent text-stone-600 dark:text-stone-300'
               }`}
             >
               {item.mobileLabel}

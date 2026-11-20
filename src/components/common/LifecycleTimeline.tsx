@@ -89,30 +89,30 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-4">
+    <div className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 p-4 sm:p-5 space-y-4">
       {/* Header status summary */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-stone-100 dark:border-stone-800">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <div className="text-[11px] font-semibold text-stone-500 dark:text-stone-400">
             Cycle de Vie Officiel de la Candidature
           </div>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex flex-wrap items-center gap-2 mt-1">
             <span className={`px-2.5 py-1 rounded-lg border text-xs font-bold ${currentInfo.colorClass}`}>
               {currentInfo.label}
             </span>
             {currentState === 'pieces_a_completer' && (
-              <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+              <span className="text-xs text-amber-700 dark:text-amber-400 font-semibold flex items-center gap-1">
                 <AlertTriangle className="w-3.5 h-3.5" /> Action du candidat requise
               </span>
             )}
             {currentState === 'rejetee' && (
-              <span className="text-xs text-rose-600 font-semibold flex items-center gap-1">
+              <span className="text-xs text-rose-700 dark:text-rose-400 font-semibold flex items-center gap-1">
                 <XCircle className="w-3.5 h-3.5" /> État terminal
               </span>
             )}
           </div>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md">
+        <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md">
           {currentInfo.description}
         </p>
       </div>
@@ -130,18 +130,18 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
                     <div
                       className={`h-0.5 flex-1 ${
                         status === 'completed' || status === 'current'
-                          ? 'bg-emerald-500'
-                          : 'bg-slate-200 dark:bg-slate-800'
+                          ? 'bg-emerald-600 dark:bg-emerald-500'
+                          : 'bg-stone-200 dark:bg-stone-800'
                       }`}
                     />
                   )}
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold border shrink-0 transition-all ${
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold border shrink-0 transition-all tabular-nums ${
                       status === 'completed'
-                        ? 'bg-emerald-600 text-white border-emerald-600'
+                        ? 'bg-emerald-700 text-white border-emerald-700 dark:bg-emerald-600 dark:border-emerald-600'
                         : status === 'current'
-                        ? 'bg-blue-600 text-white border-blue-600 ring-4 ring-blue-500/20'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-700'
+                        ? 'bg-teal-700 text-white border-teal-700 ring-4 ring-teal-600/20 dark:bg-teal-600 dark:border-teal-500'
+                        : 'bg-stone-100 dark:bg-stone-800 text-stone-400 border-stone-300 dark:border-stone-700'
                     }`}
                   >
                     {status === 'completed' ? (
@@ -156,8 +156,8 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
                     <div
                       className={`h-0.5 flex-1 ${
                         status === 'completed'
-                          ? 'bg-emerald-500'
-                          : 'bg-slate-200 dark:bg-slate-800'
+                          ? 'bg-emerald-600 dark:bg-emerald-500'
+                          : 'bg-stone-200 dark:bg-stone-800'
                       }`}
                     />
                   )}
@@ -165,10 +165,10 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
                 <span
                   className={`mt-1.5 text-[10px] leading-tight px-1 ${
                     status === 'current'
-                      ? 'font-bold text-blue-700 dark:text-blue-300'
+                      ? 'font-bold text-teal-800 dark:text-teal-300'
                       : status === 'completed'
-                      ? 'font-semibold text-emerald-700 dark:text-emerald-400'
-                      : 'text-slate-400'
+                      ? 'font-semibold text-emerald-800 dark:text-emerald-400'
+                      : 'text-stone-400 dark:text-stone-500'
                   }`}
                 >
                   {info.shortLabel}
@@ -181,8 +181,8 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
 
       {/* Guarded Transitions Available to Current Actor */}
       {onTriggerTransition && availableTransitions.length > 0 && (
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
-          <div className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
+        <div className="pt-2 border-t border-stone-100 dark:border-stone-800 space-y-2">
+          <div className="text-[11px] font-bold text-stone-600 dark:text-stone-300">
             Transitions autorisées pour votre profil :
           </div>
           <div className="flex flex-wrap gap-2">
@@ -193,12 +193,12 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
                   disabled={!tr.guardAllowed}
                   onClick={() => onTriggerTransition(tr.to)}
                   title={tr.guardReason || tr.label}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  className={`px-3.5 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors whitespace-nowrap ${
                     !tr.guardAllowed
-                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700 cursor-not-allowed'
+                      ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 border border-stone-200 dark:border-stone-700 cursor-not-allowed'
                       : tr.to === 'rejetee' || tr.to === 'pieces_a_completer'
                       ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs'
+                      : 'bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white'
                   }`}
                 >
                   {tr.guardAllowed ? (
@@ -209,7 +209,7 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
                   <span>{tr.label}</span>
                 </button>
                 {!tr.guardAllowed && tr.guardReason && (
-                  <span className="text-[10px] text-amber-600 dark:text-amber-400 max-w-xs">
+                  <span className="text-[10px] text-amber-700 dark:text-amber-400 max-w-xs">
                     {tr.guardReason}
                   </span>
                 )}
@@ -221,8 +221,8 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
 
       {/* Transition History Log */}
       {!compact && application.transitionHistory && application.transitionHistory.length > 0 && (
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
-          <div className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
+        <div className="pt-2 border-t border-stone-100 dark:border-stone-800 space-y-2">
+          <div className="text-[11px] font-bold text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
             <History className="w-3.5 h-3.5" />
             <span>Historique des transitions ({application.transitionHistory.length})</span>
           </div>
@@ -230,18 +230,22 @@ export const LifecycleTimeline: React.FC<LifecycleTimelineProps> = ({
             {[...application.transitionHistory].reverse().map((h, i) => (
               <div
                 key={`${h.timestamp}-${i}`}
-                className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 text-[11px] flex flex-col sm:flex-row sm:items-center justify-between gap-1"
+                className="p-2.5 rounded-lg bg-stone-50 dark:bg-stone-800/50 text-[11px] flex flex-col sm:flex-row sm:items-center justify-between gap-1"
               >
                 <div>
-                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                  <span className="font-bold text-stone-800 dark:text-stone-200">
                     {getLifecycleStageInfo(h.toState).label}
                   </span>
-                  <span className="text-slate-500 ml-1.5">par {h.actorName}</span>
+                  <span className="text-stone-500 dark:text-stone-400 ml-1.5">
+                    par {h.actorName}
+                  </span>
                   {h.comment && (
-                    <div className="text-[10px] text-slate-500 italic">{h.comment}</div>
+                    <div className="text-[10px] text-stone-500 dark:text-stone-400 italic">
+                      {h.comment}
+                    </div>
                   )}
                 </div>
-                <span className="text-[10px] font-mono text-slate-400 shrink-0">
+                <span className="text-[10px] font-mono text-stone-400 shrink-0 tabular-nums">
                   {new Date(h.timestamp).toLocaleString('fr-FR', {
                     dateStyle: 'short',
                     timeStyle: 'short'

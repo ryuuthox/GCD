@@ -24,9 +24,9 @@ export const DEMO_ACCOUNTS = {
     university: 'Université Sidi Mohamed Ben Abdellah (USMBA Fès)'
   },
   encadrant: {
-    email: 'adil.hachmoud@usmba.ac.ma',
+    email: 'driss.alaoui@usmba.ac.ma',
     password: 'prof123',
-    fullName: 'Pr. Adil HACHMOUD',
+    fullName: 'Pr. Driss ALAOUI',
     role: 'directeur_these' as const,
     roles: ['directeur_these', 'enseignant'] as const,
     title: 'Professeur de l\'Enseignement Supérieur (PES)',
@@ -70,9 +70,9 @@ export const INITIAL_SUBJECTS: DoctoralSubject[] = [
   {
     id: '14064',
     title: "Optimisation de l'alignement des grands modèles de langage : concilier sécurité, robustesse et performance",
-    supervisorName: 'HACHMOUD ADIL',
+    supervisorName: 'ALAOUI DRISS',
     supervisorTitle: 'Professeur de l\'Enseignement Supérieur (PES)',
-    supervisorEmail: 'adil.hachmoud@usmba.ac.ma',
+    supervisorEmail: 'driss.alaoui@usmba.ac.ma',
     coSupervisorName: 'EL MEKKAOUI JAOUAD',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
     schoolName: 'École Supérieure de Technologie (EST Fès)',
@@ -87,14 +87,14 @@ export const INITIAL_SUBJECTS: DoctoralSubject[] = [
     description: "Ce projet de recherche vise à concevoir des protocoles d'alignement avancés (RLHF, DPO, KTO) capables de minimiser les hallucinations et les vulnérabilités adversariales dans les LLMs multilingues (Arabe standard, Darija et Français), tout en maintenant une faible empreinte computationnelle pour l'inférence en temps réel.",
     prerequisites: "Diplôme de Master Recherche ou Diplôme d'Ingénieur d'État en Informatique ou IA. Solide maîtrise de PyTorch, Hugging Face et des concepts d'apprentissage par renforcement.",
     keywords: ['LLM', 'RLHF', 'Alignement Éthique', 'NLP Multilingue', 'PyTorch'],
-    contactEmail: 'adil.hachmoud@usmba.ac.ma'
+    contactEmail: 'driss.alaoui@usmba.ac.ma'
   },
   {
     id: '14065',
     title: "Modélisation et optimisation d'un contrôle d'accès adaptatif dans les architectures Zero Trust",
-    supervisorName: 'HACHMOUD ADIL',
+    supervisorName: 'ALAOUI DRISS',
     supervisorTitle: 'Professeur de l\'Enseignement Supérieur (PES)',
-    supervisorEmail: 'adil.hachmoud@usmba.ac.ma',
+    supervisorEmail: 'driss.alaoui@usmba.ac.ma',
     coSupervisorName: 'CHERGUI MOHAMED',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
     schoolName: 'École Supérieure de Technologie (EST Fès)',
@@ -109,14 +109,14 @@ export const INITIAL_SUBJECTS: DoctoralSubject[] = [
     description: "La thèse étudie la formalisation mathématique de politiques de contrôle d'accès dynamiques basées sur le contexte (ABAC augmenté par IA) dans les environnements infonuagiques distribués, répondant aux standards Zero Trust (NIST SP 800-207).",
     prerequisites: "Diplôme d'Ingénieur ou Master en Cybersécurité, Réseaux ou Systèmes Distribués. Notions avancées de cryptographie appliquée.",
     keywords: ['Zero Trust', 'ABAC', 'Cybersécurité', 'Cloud Computing', 'NIST'],
-    contactEmail: 'adil.hachmoud@usmba.ac.ma'
+    contactEmail: 'driss.alaoui@usmba.ac.ma'
   },
   {
     id: '14066',
     title: "Détection de menaces cybernétiques dans le trafic réseau chiffré : approche par apprentissage fédéré",
-    supervisorName: 'HACHMOUD ADIL',
+    supervisorName: 'ALAOUI DRISS',
     supervisorTitle: 'Professeur de l\'Enseignement Supérieur (PES)',
-    supervisorEmail: 'adil.hachmoud@usmba.ac.ma',
+    supervisorEmail: 'driss.alaoui@usmba.ac.ma',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
     schoolName: 'École Supérieure de Technologie (EST Fès)',
     university: 'Université Sidi Mohamed Ben Abdellah (USMBA Fès)',
@@ -129,7 +129,7 @@ export const INITIAL_SUBJECTS: DoctoralSubject[] = [
     description: "Développement d'algorithmes d'apprentissage fédéré (Federated Learning) et d'analyse comportementale de flux réseau TLS 1.3 chiffrés sans inspection des paquets clairs, en stricte conformité avec la loi 09-08 de protection des données personnelles.",
     prerequisites: "Formation en Sécurité Informatique ou Apprentissage Automatique. Compétences en capture de trafic (Wireshark) et Python.",
     keywords: ['Trafic Chiffré TLS', 'Federated Learning', 'Loi 09-08 CNDP', 'Détection Intrusion'],
-    contactEmail: 'adil.hachmoud@usmba.ac.ma'
+    contactEmail: 'driss.alaoui@usmba.ac.ma'
   },
   {
     id: '14067',
@@ -196,8 +196,8 @@ export const INITIAL_CANDIDATES: Candidate[] = [
     skills: ['PyTorch', 'Large Language Models', 'RLHF', 'Fine-Tuning', 'Docker', 'Python'],
     subjectId: '14064',
     subjectTitle: "Optimisation de l'alignement des grands modèles de langage : concilier sécurité, robustesse et performance",
-    supervisorName: 'HACHMOUD ADIL',
-    thesisDirectorName: 'Pr. Adil HACHMOUD',
+    supervisorName: 'ALAOUI DRISS',
+    thesisDirectorName: 'Pr. Driss ALAOUI',
     coSupervisorName: 'Pr. Jaouad EL MEKKAOUI',
     structureDirectorName: 'Pr. Mohamed CHERGUI',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
@@ -207,7 +207,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
       {
         id: '14064',
         title: "Optimisation de l'alignement des grands modèles de langage : concilier sécurité, robustesse et performance",
-        supervisorName: 'HACHMOUD ADIL',
+        supervisorName: 'ALAOUI DRISS',
         schoolName: 'EST Fès',
         university: 'USMBA Fès',
         labName: 'LSIG',
@@ -216,7 +216,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
       {
         id: '14065',
         title: "Modélisation et optimisation d'un contrôle d'accès adaptatif dans les architectures Zero Trust",
-        supervisorName: 'HACHMOUD ADIL',
+        supervisorName: 'ALAOUI DRISS',
         schoolName: 'EST Fès',
         university: 'USMBA Fès',
         labName: 'LSIG',
@@ -255,7 +255,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
         toState: 'verification_docs',
         event: 'START_DOC_REVIEW',
         actorUid: 'seed-prof-001',
-        actorName: 'Pr. Adil HACHMOUD',
+        actorName: 'Pr. Driss ALAOUI',
         actorRoles: ['directeur_these'],
         timestamp: '2026-10-16T14:00:00Z'
       },
@@ -264,7 +264,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
         toState: 'examen_encadrement',
         event: 'TRANSMIT_TO_SUPERVISOR',
         actorUid: 'seed-prof-001',
-        actorName: 'Pr. Adil HACHMOUD',
+        actorName: 'Pr. Driss ALAOUI',
         actorRoles: ['directeur_these'],
         timestamp: '2026-10-18T10:00:00Z'
       },
@@ -273,7 +273,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
         toState: 'entretien_planifie',
         event: 'SCHEDULE_INTERVIEW',
         actorUid: 'seed-prof-001',
-        actorName: 'Pr. Adil HACHMOUD',
+        actorName: 'Pr. Driss ALAOUI',
         actorRoles: ['directeur_these'],
         timestamp: '2026-10-21T09:15:00Z'
       },
@@ -282,7 +282,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
         toState: 'evaluee',
         event: 'RECORD_PV',
         actorUid: 'seed-prof-001',
-        actorName: 'Pr. Adil HACHMOUD',
+        actorName: 'Pr. Driss ALAOUI',
         actorRoles: ['directeur_these'],
         timestamp: '2026-10-26T15:20:00Z',
         comment: 'PV #PV-2026-001 enregistré (17.5/20).'
@@ -325,8 +325,8 @@ export const INITIAL_CANDIDATES: Candidate[] = [
     skills: ['Zero Trust', 'Kubernetes', 'IAM', 'NIST SP 800-207', 'Linux', 'Go'],
     subjectId: '14065',
     subjectTitle: "Modélisation et optimisation d'un contrôle d'accès adaptatif dans les architectures Zero Trust",
-    supervisorName: 'HACHMOUD ADIL',
-    thesisDirectorName: 'Pr. Adil HACHMOUD',
+    supervisorName: 'ALAOUI DRISS',
+    thesisDirectorName: 'Pr. Driss ALAOUI',
     coSupervisorName: 'Pr. Mohamed CHERGUI',
     structureDirectorName: 'Pr. Mohamed CHERGUI',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
@@ -336,7 +336,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
       {
         id: '14065',
         title: "Modélisation et optimisation d'un contrôle d'accès adaptatif dans les architectures Zero Trust",
-        supervisorName: 'HACHMOUD ADIL',
+        supervisorName: 'ALAOUI DRISS',
         schoolName: 'EST Fès',
         university: 'USMBA Fès',
         labName: 'LSIG',
@@ -363,7 +363,7 @@ export const INITIAL_CANDIDATES: Candidate[] = [
         toState: 'pieces_a_completer',
         event: 'REQUEST_CORRECTIONS',
         actorUid: 'seed-prof-001',
-        actorName: 'Pr. Adil HACHMOUD',
+        actorName: 'Pr. Driss ALAOUI',
         actorRoles: ['directeur_these'],
         timestamp: '2026-10-28T10:15:00Z',
         comment: 'Diplôme d’Ingénieur scanné illisible — remplacement demandé.'
@@ -404,8 +404,8 @@ export const INITIAL_CANDIDATES: Candidate[] = [
     skills: ['Wireshark', 'Python', 'Federated Learning', 'TLS', 'PyTorch'],
     subjectId: '14066',
     subjectTitle: "Détection de menaces cybernétiques dans le trafic réseau chiffré : approche par apprentissage fédéré",
-    supervisorName: 'HACHMOUD ADIL',
-    thesisDirectorName: 'Pr. Adil HACHMOUD',
+    supervisorName: 'ALAOUI DRISS',
+    thesisDirectorName: 'Pr. Driss ALAOUI',
     structureDirectorName: 'Pr. Mohamed CHERGUI',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
     schoolName: 'École Supérieure de Technologie (EST Fès)',
@@ -446,7 +446,7 @@ export const INITIAL_APPLICATION_DOCUMENTS: ApplicationDocument[] = [
     uploadedByUid: 'seed-cand-001',
     uploadedAt: '2026-10-14T11:20:00Z',
     status: 'validated',
-    reviewerName: 'Pr. Adil HACHMOUD',
+    reviewerName: 'Pr. Driss ALAOUI',
     reviewedAt: '2026-10-16T14:05:00Z'
   },
   {
@@ -460,7 +460,7 @@ export const INITIAL_APPLICATION_DOCUMENTS: ApplicationDocument[] = [
     uploadedByUid: 'seed-cand-001',
     uploadedAt: '2026-10-14T11:22:00Z',
     status: 'validated',
-    reviewerName: 'Pr. Adil HACHMOUD',
+    reviewerName: 'Pr. Driss ALAOUI',
     reviewedAt: '2026-10-16T14:07:00Z'
   },
   {
@@ -474,7 +474,7 @@ export const INITIAL_APPLICATION_DOCUMENTS: ApplicationDocument[] = [
     uploadedByUid: 'seed-cand-001',
     uploadedAt: '2026-10-14T11:23:00Z',
     status: 'validated',
-    reviewerName: 'Pr. Adil HACHMOUD',
+    reviewerName: 'Pr. Driss ALAOUI',
     reviewedAt: '2026-10-16T14:08:00Z'
   },
   {
@@ -488,7 +488,7 @@ export const INITIAL_APPLICATION_DOCUMENTS: ApplicationDocument[] = [
     uploadedByUid: 'seed-cand-001',
     uploadedAt: '2026-10-14T11:24:00Z',
     status: 'validated',
-    reviewerName: 'Pr. Adil HACHMOUD',
+    reviewerName: 'Pr. Driss ALAOUI',
     reviewedAt: '2026-10-16T14:09:00Z'
   },
   {
@@ -502,7 +502,7 @@ export const INITIAL_APPLICATION_DOCUMENTS: ApplicationDocument[] = [
     uploadedByUid: 'seed-cand-001',
     uploadedAt: '2026-10-14T11:25:00Z',
     status: 'validated',
-    reviewerName: 'Pr. Adil HACHMOUD',
+    reviewerName: 'Pr. Driss ALAOUI',
     reviewedAt: '2026-10-16T14:10:00Z'
   },
   {
@@ -516,7 +516,7 @@ export const INITIAL_APPLICATION_DOCUMENTS: ApplicationDocument[] = [
     uploadedByUid: 'seed-cand-001',
     uploadedAt: '2026-10-14T11:26:00Z',
     status: 'validated',
-    reviewerName: 'Pr. Adil HACHMOUD',
+    reviewerName: 'Pr. Driss ALAOUI',
     reviewedAt: '2026-10-16T14:11:00Z'
   },
   {
@@ -530,7 +530,7 @@ export const INITIAL_APPLICATION_DOCUMENTS: ApplicationDocument[] = [
     uploadedByUid: 'seed-cand-002',
     uploadedAt: '2026-10-18T10:50:00Z',
     status: 'rejected',
-    reviewerName: 'Pr. Adil HACHMOUD',
+    reviewerName: 'Pr. Driss ALAOUI',
     reviewedAt: '2026-10-28T10:15:00Z',
     rejectionReason: 'Le tampon de l’établissement sur la copie scannée est illisible. Veuillez déposer un scan couleur en 300 DPI ou l’attestation certifiée.'
   },
@@ -545,7 +545,7 @@ export const INITIAL_APPLICATION_DOCUMENTS: ApplicationDocument[] = [
     uploadedByUid: 'seed-cand-002',
     uploadedAt: '2026-10-18T10:55:00Z',
     status: 'additional_info_required',
-    reviewerName: 'Pr. Adil HACHMOUD',
+    reviewerName: 'Pr. Driss ALAOUI',
     reviewedAt: '2026-10-28T10:16:00Z',
     rejectionReason: 'Merci d’ajouter une section dédiée au protocole d’expérimentation et aux métriques d’évaluation.'
   }
@@ -559,13 +559,13 @@ export const INITIAL_INTERVIEW_PVS: InterviewPv[] = [
     candidateCin: 'CD712948',
     subjectId: '14064',
     subjectTitle: "Optimisation de l'alignement des grands modèles de langage : concilier sécurité, robustesse et performance",
-    supervisorName: 'HACHMOUD ADIL',
+    supervisorName: 'ALAOUI DRISS',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
     schoolName: 'EST Fès',
     interviewDate: '26/10/2026',
     oralGrade: 17.5,
     decision: 'admis_principal',
-    juryMembers: ['Pr. Adil HACHMOUD (Directeur)', 'Pr. Mohamed CHERGUI (Membre)', 'Pr. Jaouad EL MEKKAOUI (Examinateur)'],
+    juryMembers: ['Pr. Driss ALAOUI (Directeur)', 'Pr. Mohamed CHERGUI (Membre)', 'Pr. Jaouad EL MEKKAOUI (Examinateur)'],
     comments: "Excellent profil de recherche. Le candidat a démontré une maîtrise approfondie des algorithmes d'alignement RLHF et des bibliothèques open-source modernes. Forte motivation et adéquation totale avec le projet de thèse.",
     submittedBySupervisor: true,
     validatedByStructure: false
@@ -577,13 +577,13 @@ export const INITIAL_INTERVIEW_PVS: InterviewPv[] = [
     candidateCin: 'C981240',
     subjectId: '14066',
     subjectTitle: "Détection de menaces cybernétiques dans le trafic réseau chiffré : approche par apprentissage fédéré",
-    supervisorName: 'HACHMOUD ADIL',
+    supervisorName: 'ALAOUI DRISS',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
     schoolName: 'EST Fès',
     interviewDate: '27/10/2026',
     oralGrade: 16.0,
     decision: 'admis_principal',
-    juryMembers: ['Pr. Adil HACHMOUD (Directeur)', 'Pr. Jaouad EL MEKKAOUI (Membre)'],
+    juryMembers: ['Pr. Driss ALAOUI (Directeur)', 'Pr. Jaouad EL MEKKAOUI (Membre)'],
     comments: "Très bon entretien technique. Le sujet s'aligne bien avec son PFE ingénieur. Admis sur liste principale sous réserve de libération du temps de travail.",
     submittedBySupervisor: true,
     validatedByStructure: true,
@@ -596,7 +596,7 @@ export const INITIAL_RELANCES: ManualRelance[] = [
   {
     id: 'REL-001',
     date: '28/10/2026 10:15',
-    senderName: 'Pr. Adil HACHMOUD',
+    senderName: 'Pr. Driss ALAOUI',
     recipientName: 'Yassine BENKIRANE',
     recipientEmail: 'yassine.benkirane@usmba.ac.ma',
     recipientRole: 'candidat',
@@ -608,7 +608,7 @@ export const INITIAL_RELANCES: ManualRelance[] = [
   {
     id: 'REL-002',
     date: '29/10/2026 14:30',
-    senderName: 'Pr. Adil HACHMOUD',
+    senderName: 'Pr. Driss ALAOUI',
     recipientName: 'Pr. Mohamed CHERGUI',
     recipientEmail: 'directeur.lsig@usmba.ac.ma',
     recipientRole: 'directeur_structure',
@@ -622,8 +622,8 @@ export const INITIAL_RELANCES: ManualRelance[] = [
 export const INITIAL_USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'ACC-001',
-    email: 'adil.hachmoud@usmba.ac.ma',
-    fullName: 'Pr. Adil HACHMOUD',
+    email: 'driss.alaoui@usmba.ac.ma',
+    fullName: 'Pr. Driss ALAOUI',
     role: 'directeur_these',
     roles: ['directeur_these', 'enseignant'],
     title: 'Professeur de l\'Enseignement Supérieur (PES)',
@@ -696,7 +696,7 @@ export const INITIAL_REREGISTRATIONS: ReRegistration[] = [
     studentCne: 'N138091244',
     year: 3,
     thesisTitle: "Systèmes de détection d'intrusions cybernétiques résilients dans l'Internet des Objets Médicaux (IoMT)",
-    supervisorName: 'HACHMOUD ADIL',
+    supervisorName: 'ALAOUI DRISS',
     labName: 'Laboratoire Sciences Ingénierie et Gestion (LSIG)',
     schoolName: 'École Supérieure de Technologie (EST Fès)',
     university: 'Université Sidi Mohamed Ben Abdellah (USMBA Fès)',
@@ -704,7 +704,7 @@ export const INITIAL_REREGISTRATIONS: ReRegistration[] = [
     activityReport: {
       contexte: "Développement d'un framework d'apprentissage automatique embarqué pour la détection en temps réel des attaques par déni de service et d'exfiltration de données dans les dispositifs médicaux connectés.",
       contributions: "Proposition d'un modèle ultra-léger basé sur Quantized MobileNet et validation sur le jeu de données WUSTL-EHMS-2020.",
-      publications: "1. K. Zouhir, A. Hachmoud, 'Resilient Lightweight Intrusion Detection for IoMT Devices', IEEE Access, vol. 12, pp. 4501-4512, 2026.\n2. 1 brevet national en cours de dépôt à l'OMPIC.",
+      publications: "1. K. Zouhir, D. Alaoui, 'Resilient Lightweight Intrusion Detection for IoMT Devices', IEEE Access, vol. 12, pp. 4501-4512, 2026.\n2. 1 brevet national en cours de dépôt à l'OMPIC.",
       communications: "Présentation orale à la Conférence Internationale sur la Cybersécurité et les Objets Connectés (Marrakech, Avril 2026).",
       mobilites: "Stage de recherche de 2 mois au Laboratoire d'Informatique de Grenoble (LIG).",
       activitesTransversales: "Animation de TD de Programmation Réseau pour les étudiants de Licence Pro.",
@@ -741,8 +741,8 @@ export const INITIAL_AUDIT_LOGS: AuditLogEntry[] = [
     id: 'AUD-1002',
     timestamp: '2026-10-26T15:20:00Z',
     actorUid: 'seed-prof-001',
-    actorName: 'Pr. Adil HACHMOUD',
-    actorEmail: 'adil.hachmoud@usmba.ac.ma',
+    actorName: 'Pr. Driss ALAOUI',
+    actorEmail: 'driss.alaoui@usmba.ac.ma',
     actorRoles: ['directeur_these', 'enseignant'],
     action: 'PV_SUBMITTED',
     actionLabel: 'Dépôt du PV d’entretien',
@@ -757,8 +757,8 @@ export const INITIAL_AUDIT_LOGS: AuditLogEntry[] = [
     id: 'AUD-1003',
     timestamp: '2026-10-28T10:15:00Z',
     actorUid: 'seed-prof-001',
-    actorName: 'Pr. Adil HACHMOUD',
-    actorEmail: 'adil.hachmoud@usmba.ac.ma',
+    actorName: 'Pr. Driss ALAOUI',
+    actorEmail: 'driss.alaoui@usmba.ac.ma',
     actorRoles: ['directeur_these'],
     action: 'DOCUMENT_REJECTED',
     actionLabel: 'Rejet d’une pièce justificative',
@@ -809,7 +809,7 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     recipientRole: 'directeur_structure',
     triggerEvent: 'PV_SUBMITTED',
     title: 'PV d’entretien en attente de visa (#PV-2026-001)',
-    content: 'Pr. Adil HACHMOUD a transmis le PV d’entretien de Amine EL MANSOURI (17.5/20) pour validation par la direction de structure.',
+    content: 'Pr. Driss ALAOUI a transmis le PV d’entretien de Amine EL MANSOURI (17.5/20) pour validation par la direction de structure.',
     category: 'action_required',
     status: 'unread',
     createdAt: '2026-10-26T15:25:00Z',

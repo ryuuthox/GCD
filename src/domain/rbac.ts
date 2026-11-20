@@ -5,7 +5,7 @@ export const ROLE_DEFINITIONS: Record<GcdRole, RoleDefinition> = {
     id: 'candidat',
     label: 'Candidat Doctorant',
     description: 'Consultation du catalogue, dépôt de candidature (3 vœux max), suivi du dossier et réinscription.',
-    badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+    badgeColor: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300',
     privileges: [
       'CATALOG_VIEW',
       'APPLICATION_CREATE',
@@ -19,7 +19,7 @@ export const ROLE_DEFINITIONS: Record<GcdRole, RoleDefinition> = {
     id: 'enseignant',
     label: 'Enseignant / Encadrant',
     description: 'Proposition de sujets, examen des dossiers assignés, vérification documentaire et participation aux jurys.',
-    badgeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+    badgeColor: 'bg-teal-50 text-teal-800 dark:bg-teal-950/70 dark:text-teal-300',
     privileges: [
       'CATALOG_VIEW',
       'APPLICATION_VIEW_ASSIGNED',
@@ -35,7 +35,7 @@ export const ROLE_DEFINITIONS: Record<GcdRole, RoleDefinition> = {
     id: 'directeur_these',
     label: 'Directeur de Thèse',
     description: 'Direction principale de thèse, sélection finale des candidats, rédaction des PV et validation académique.',
-    badgeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+    badgeColor: 'bg-teal-100 text-teal-900 dark:bg-teal-900/60 dark:text-teal-200',
     privileges: [
       'CATALOG_VIEW',
       'APPLICATION_VIEW_ASSIGNED',
@@ -52,7 +52,7 @@ export const ROLE_DEFINITIONS: Record<GcdRole, RoleDefinition> = {
     id: 'co_encadrant',
     label: 'Co-encadrant',
     description: 'Co-direction scientifique, examen des pièces justificatives et avis consultatif sur les entretiens.',
-    badgeColor: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300',
+    badgeColor: 'bg-stone-100 text-stone-800 dark:bg-stone-800 dark:text-stone-200',
     privileges: [
       'CATALOG_VIEW',
       'APPLICATION_VIEW_ASSIGNED',
@@ -66,7 +66,7 @@ export const ROLE_DEFINITIONS: Record<GcdRole, RoleDefinition> = {
     id: 'directeur_structure',
     label: 'Directeur de Structure',
     description: 'Visa des PV d’entretiens, validation des sujets de laboratoire, validation des rapports annuels et inscription finale.',
-    badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+    badgeColor: 'bg-emerald-100 text-emerald-900 dark:bg-emerald-900/60 dark:text-emerald-200',
     privileges: [
       'CATALOG_VIEW',
       'APPLICATION_VIEW_ALL',
@@ -84,7 +84,7 @@ export const ROLE_DEFINITIONS: Record<GcdRole, RoleDefinition> = {
     id: 'admin',
     label: 'Administrateur Central',
     description: 'Gestion complète des comptes, attribution multi-rôles, calendrier de campagne et consultation du journal d’audit.',
-    badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
+    badgeColor: 'bg-amber-50 text-amber-900 dark:bg-amber-950/70 dark:text-amber-300',
     privileges: [
       'CATALOG_VIEW',
       'APPLICATION_VIEW_ALL',
